@@ -17,7 +17,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-function Log() {
+async function Log() {
+  const StudentData = await axios.get("http://localhost:8000/api/v1/student");
+  console.log(StudentData.data.data);
   return (
     <div className="h-screen w-screen flex">
       <div className="bg-slate-950 w-1/3 h-screen"></div>
@@ -46,10 +48,10 @@ function Log() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Link href="/src/app/dashboard">
+            <Link href="/dashboard">
               <Button>Login</Button>
             </Link>
-            <Link href="/signup">
+            <Link href="/register">
               <Button variant="outline">Sign up</Button>
             </Link>
           </CardFooter>

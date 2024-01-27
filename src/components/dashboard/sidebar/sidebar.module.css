@@ -1,0 +1,45 @@
+/* sidebar.module.css */
+
+.sticky {
+    position: sticky;
+    top: 0;
+}
+
+.sidebar {
+    background-color: #303030;
+    /* Change this to your desired background color */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-info {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-category {
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+    margin: 10px 0;
+}
+
+.menu-item {
+    margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+    }
+}
