@@ -1,22 +1,34 @@
-// page.tsx
-import React from "react";
 import { Student, columns } from "./columns";
 import { DataTable } from "./data-table";
-import { StudentInfo } from "@/constants/data";
-import axios from "axios";
 
 async function getData(): Promise<Student[]> {
-  // Fetch data from your API here.
-  const StudentData = await axios.get("http://localhost:8000/api/v1/student");
-  console.log(StudentData);
-  return StudentInfo;
-}
+  const response = await fetch("http://localhost:8000/api/v1/student");
+  const resdata = await response.json();
 
-export default async function DemoPage() {
+  const data = resdata.data;
+
+  if (!resdata.success) {
+    throw new Error("Failed to fetch data");
+  }
+
+  // Map the API response to the Student type
+  const students: Student[] = data.map((item: any) => ({
+    username: item.username,
+    email: item.email,
+    fullName: item.fullName,
+    mobileNo: item.mobileNo,
+    rollNo: item.rollNo,
+    prnNo: item.prnNo,
+    registrationId: item.registrationId,
+  }));
+
+  return students;
+}
+export default async function StudentTable() {
   const data = await getData();
 
   return (
-    <div className="overflow-hidden px-10">
+    <div className="container mx-auto py-10">
       <DataTable columns={columns} data={data} />
     </div>
   );

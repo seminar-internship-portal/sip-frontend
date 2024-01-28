@@ -8,8 +8,9 @@ export default function Page() {
     fetch("http://localhost:8000/api/v1/student")
       .then((response) => response.json())
       .then((data) => setStore(data.data)); // Access `data` correctly
-  }, []);
+  }, [store]);
 
+  
 
   return (
     <div>

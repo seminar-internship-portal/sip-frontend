@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 async function Log() {
   const StudentData = await axios.get("http://localhost:8000/api/v1/student");
@@ -26,7 +27,33 @@ async function Log() {
       <div className="w-2/3 flex flex-wrap flex-col items-center justify-center">
         <Card className="sm:w-[700px]">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl">Login to your Account</CardTitle>
+            <CardTitle className="text-2xl my-2">
+              Login to your Account
+            </CardTitle>
+            <div className="flex gap-1 my-2">
+              <ToggleGroup type="single">
+                <ToggleGroupItem
+                  value="Mentor"
+                  className="bg-slate-950 text-white"
+                >
+                  Mentor
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="Student"
+                  className="bg-slate-950 text-white"
+                >
+                  Student
+                </ToggleGroupItem>
+
+                <ToggleGroupItem
+                  value="Admin"
+                  className="bg-slate-950 text-white w-full"
+                >
+                  Admin
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+
             <CardDescription>
               Enter your email and password to login
             </CardDescription>

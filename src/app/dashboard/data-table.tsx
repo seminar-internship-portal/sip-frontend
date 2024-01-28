@@ -58,10 +58,10 @@ export function DataTable<TData, TValue>({
     <div className="overflow-hidden">
       <div className="flex justify-between py-10 px-1">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Search Roll No"
+          value={(table.getColumn("rollNo")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("rollNo")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

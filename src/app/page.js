@@ -10,6 +10,7 @@ export default function Page() {
       .then((data) => setStore(data.data)); // Access `data` correctly
   }, []);
 
+  console.log(store)
   return (
     <div>
       <h1>Info</h1>

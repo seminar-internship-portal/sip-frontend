@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,36 +12,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
+
+// This type is used to define the shape of our data.
+// You can use a Zod schema here if you want.
 export type Student = {
   id: string;
-  rollno: number;
-  name: string;
+  username: string;
   email: string;
-  prn: number;
-};
-
-const StudentList = () => {
-  const [students, setStudents] = useState<Student[]>([]);
-
-  useEffect(() => {
-    fetch("http://localhost:8000/api/v1/student")
-      .then((response) => response.json())
-      .then((data) => setStudents(data.data));
-  }, []);
-
-  return (
-    <div>
-      {students.map((item) => (
-        <div key={item.id}>
-          <p>Username: {item.name}</p>
-          <p>Email: {item.email}</p>
-          <p>Roll No: {item.rollno}</p>
-          <p>PRN: {item.prn}</p>
-          {/* Add more properties as needed */}
-        </div>
-      ))}
-    </div>
-  );
+  fullName: string;
+  mobileNo: string;
+  rollNo: string;
+  prnNo: string;
+  registrationId: string;
 };
 
 export const columns: ColumnDef<Student>[] = [
@@ -67,32 +48,28 @@ export const columns: ColumnDef<Student>[] = [
     ),
   },
   {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "email",
+    accessorKey: "rollNo",
     header: ({ column }) => {
       return (
         <Button
+          className="p-0"
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Email
+          Roll No
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
   },
   {
-    accessorKey: "rollno",
-    header: "Roll No",
+    accessorKey: "fullName",
+    header: "Full Name",
   },
   {
-    accessorKey: "prn",
-    header: "PRN",
+    accessorKey: "email",
+    header: "Email",
   },
-
   {
     id: "actions",
     cell: ({ row }) => {
