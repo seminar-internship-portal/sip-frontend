@@ -31,23 +31,23 @@ async function Log() {
               Login to your Account
             </CardTitle>
             <div className="flex gap-1 my-2 w-full">
-              <ToggleGroup type="single" className="w-full">
+              <ToggleGroup type="single" className="w-full py-2">
                 <ToggleGroupItem
                   value="Mentor"
-                  className="bg-white text-black w-full"
+                  className="bg-white text-black w-full border-2"
                 >
                   Mentor
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="Student"
-                  className="bg-white text-black w-full"
+                  className="bg-white text-black w-full border-2"
                 >
                   Student
                 </ToggleGroupItem>
 
                 <ToggleGroupItem
                   value="Admin"
-                  className="bg-white text-black w-full"
+                  className="bg-white text-black w-full border-2"
                 >
                   Admin
                 </ToggleGroupItem>

@@ -62,7 +62,7 @@ const menuItems = [
 
 const sidebar = () => {
   return (
-    <div className="sticky bg-slate-950 h-screen overflow-y-hidden">
+    <div className="sticky bg-slate-950 h-screen w-full">
       {/* <div className="flex items-center gap-5 mb-5 "></div> */}
       <div className="flex flex-col">
         <div className="p-4 flex-col gap-3">
