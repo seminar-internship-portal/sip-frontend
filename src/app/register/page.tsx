@@ -17,49 +17,50 @@ import { Button } from "@/components/ui/button";
 
 function Signin() {
   const handleButtonClick = () => {
-    toast.success('Account Created Successfully'); // Displays a success message
+    toast.success("Account Created Successfully"); // Displays a success message
   };
 
   return (
-    <div className="h-screen w-screen flex">
-      <div className="bg-slate-950 w-1/3 h-screen"></div>
-      <div className="w-2/3 flex flex-wrap flex-col items-center justify-center">
-        <Card className="sm:w-[700px]">
+    <div className="min-h-screen w-screen flex">
+      <div className="bg-slate-950 lg:w-1/3 lg:min-h-screen hidden lg:flex"></div>
+      <div className="w-full lg:w-2/3 flex flex-col items-center justify-center p-4">
+        <Card className="w-full sm:w-2/3">
           <form>
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl">Create Account</CardTitle>
-            <CardDescription>Enter your details below</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-5">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" type="name" placeholder="Enter Your name" required/>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="myemail@gmail.com"
-              />
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required/>
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                required
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <div>
-              <Button onClick={handleButtonClick}>
-                Create Account
-              </Button>
-            </div>
-            <div>
-              <Link href="/login"><Button>Log in</Button></Link>
-            </div>
-          </CardFooter>
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl">Create Account</CardTitle>
+              <CardDescription>Enter your details below</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="grid gap-5">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  type="name"
+                  placeholder="Enter Your name"
+                  required
+                />
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="myemail@gmail.com"
+                />
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" required />
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input id="confirmPassword" type="password" required />
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col sm:flex-row justify-between">
+              <div className="mb-2 sm:mb-0">
+                <Button onClick={handleButtonClick}>Create Account</Button>
+              </div>
+              <div>
+                <Link href="/login">
+                  <Button>Log in</Button>
+                </Link>
+              </div>
+            </CardFooter>
           </form>
         </Card>
       </div>

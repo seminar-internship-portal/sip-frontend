@@ -22,10 +22,10 @@ async function Log() {
   const StudentData = await axios.get("http://localhost:8000/api/v1/student");
   console.log(StudentData.data.data);
   return (
-    <div className="h-screen w-screen flex">
-      <div className="bg-slate-950 w-1/3 h-screen"></div>
-      <div className="w-2/3 flex flex-wrap flex-col items-center justify-center">
-        <Card className="sm:w-[700px]">
+    <div className="min-h-screen w-screen flex">
+      <div className="bg-slate-950 lg:w-1/3 lg:min-h-screen hidden lg:flex"></div>
+      <div className="w-full lg:w-2/3 flex flex-col items-center justify-center p-4">
+        <Card className="w-full lg:w-2/3 my-auto">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl my-2">
               Login to your Account
@@ -70,7 +70,7 @@ async function Log() {
               </Link>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password </Label>
+              <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" />
             </div>
           </CardContent>
