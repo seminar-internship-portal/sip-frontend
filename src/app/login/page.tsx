@@ -30,24 +30,24 @@ async function Log() {
             <CardTitle className="text-2xl my-2">
               Login to your Account
             </CardTitle>
-            <div className="flex gap-1 my-2">
-              <ToggleGroup type="single">
+            <div className="flex gap-1 my-2 w-full">
+              <ToggleGroup type="single" className="w-full">
                 <ToggleGroupItem
                   value="Mentor"
-                  className="bg-slate-950 text-white"
+                  className="bg-white text-black w-full"
                 >
                   Mentor
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="Student"
-                  className="bg-slate-950 text-white"
+                  className="bg-white text-black w-full"
                 >
                   Student
                 </ToggleGroupItem>
 
                 <ToggleGroupItem
                   value="Admin"
-                  className="bg-slate-950 text-white w-full"
+                  className="bg-white text-black w-full"
                 >
                   Admin
                 </ToggleGroupItem>
