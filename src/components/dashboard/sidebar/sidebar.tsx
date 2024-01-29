@@ -62,28 +62,23 @@ const menuItems = [
 
 const sidebar = () => {
   return (
-    <div className="sticky bg-slate-950 h-screen w-full">
-      {/* <div className="flex items-center gap-5 mb-5 "></div> */}
-      <div className="flex flex-col">
-        <div className="p-4 flex-col gap-3">
-          <div className="p-3 text-white">Amruta Patil</div>
-          <div className="p-3">
-            <Image
-              className="object-cover rounded-full"
-              src="/noavatar.png"
-              alt="/public/noavatar.png"
-              width={50}
-              height={50}
-            ></Image>
-          </div>
+    <div className="sticky bg-slate-950 h-screen w-full flex flex-col">
+      <div className="p-4 flex-col gap-3">
+        <div className="p-3 text-white">Amruta Patil</div>
+        <div className="p-3">
+          <Image
+            className="object-cover rounded-full"
+            src="/noavatar.png"
+            alt="/public/noavatar.png"
+            width={50}
+            height={50}
+          />
         </div>
       </div>
-      <ul>
+      <ul className="text-white">
         {menuItems.map((cat) => (
-          <li className="text-white" key={cat.title}>
-            <span className="font-[bold] text-[13px] mx-0 my-2.5">
-              {cat.title}{" "}
-            </span>
+          <li className="my-2.5" key={cat.title}>
+            <span className="font-bold text-xs md:text-base">{cat.title}</span>
             {cat.list.map((item) => (
               <MenuLink item={item} key={item.title} />
             ))}
