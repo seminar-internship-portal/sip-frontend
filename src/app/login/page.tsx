@@ -19,8 +19,6 @@ import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 async function Log() {
-  const StudentData = await axios.get("http://localhost:8000/api/v1/student");
-  console.log(StudentData.data.data);
   return (
     <div className="min-h-screen w-screen flex">
       <div className="bg-slate-950 lg:w-1/3 lg:min-h-screen hidden lg:flex"></div>
@@ -74,12 +72,9 @@ async function Log() {
               <Input id="password" type="password" />
             </div>
           </CardContent>
-          <CardFooter className="flex justify-between">
-            <Link href="/dashboard">
-              <Button>Login</Button>
-            </Link>
-            <Link href="/register">
-              <Button variant="outline">Sign up</Button>
+          <CardFooter className="flex justify-between w-full">
+            <Link href="/dashboard" className="w-full">
+              <Button className="w-full">Login</Button>
             </Link>
           </CardFooter>
         </Card>

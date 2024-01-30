@@ -1,8 +1,15 @@
+// page.tsx
+
 import { Student, columns } from "./columns";
 import { DataTable } from "./data-table";
 
 async function getData(): Promise<Student[]> {
-  const response = await fetch("http://localhost:8000/api/v1/student");
+  const response = await fetch(
+    "https://sip-backend-api.onrender.com/api/v1/student",
+    {
+      next: { revalidate: 10 },
+    }
+  );
   const resdata = await response.json();
 
   const data = resdata.data;
@@ -11,7 +18,6 @@ async function getData(): Promise<Student[]> {
     throw new Error("Failed to fetch data");
   }
 
-  // Map the API response to the Student type
   const students: Student[] = data.map((item: any) => ({
     username: item.username,
     email: item.email,
@@ -24,11 +30,12 @@ async function getData(): Promise<Student[]> {
 
   return students;
 }
+
 export default async function StudentTable() {
   const data = await getData();
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 overflow-y-auto">
       <DataTable columns={columns} data={data} />
     </div>
   );

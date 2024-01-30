@@ -1,8 +1,9 @@
+// layout.tsx
 "use client";
 import Sidebar from "@/components/dashboard/sidebar/sidebar";
 import Navbar from "@/components/dashboard/navbar/navbar";
-import React, { ReactNode, useState } from "react";
-import { FiMenu, FiX } from "react-icons/fi"; // Import hamburger and close icons
+import React, { ReactNode, useState, useEffect } from "react";
+import { FiMenu, FiX } from "react-icons/fi";
 
 interface LayoutProps {
   children: ReactNode;
@@ -15,9 +16,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  useEffect(() => {
+    if (isSidebarOpen) {
+      document.documentElement.classList.add("overflow-hidden");
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.documentElement.classList.remove("overflow-hidden");
+      document.body.classList.remove("overflow-hidden");
+    }
+  }, [isSidebarOpen]);
+
   return (
     <div className="flex h-screen">
-      {/* Hamburger icon for smaller screens */}
       <div className="md:hidden">
         {isSidebarOpen ? (
           <FiX
@@ -32,13 +42,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         )}
       </div>
 
-      {/* Sidebar */}
       <div className={`w-64 ${isSidebarOpen ? "block" : "hidden"} md:block`}>
+        {/* Assuming Sidebar is properly implemented and rendered */}
         <Sidebar />
       </div>
 
-      {/* Main content */}
-      <div className="flex-[4] p-2">
+      <div className="flex-[4] p-2 overflow-y-auto">
+        {/* Assuming Navbar is properly implemented and rendered */}
         <Navbar />
         {children}
       </div>

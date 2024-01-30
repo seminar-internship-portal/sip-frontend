@@ -5,7 +5,7 @@ export default function Page() {
   const [store, setStore] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/v1/student")
+    fetch("https://sip-backend-api.onrender.com/api/v1/student")
       .then((response) => response.json())
       .then((data) => setStore(data.data)); // Access `data` correctly
   }, []);
