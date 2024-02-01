@@ -1,5 +1,5 @@
 "use client";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import styles from "./navbar.module.css";
 import {
   MdNotifications,
@@ -7,9 +7,17 @@ import {
   MdPublic,
   MdSearch,
 } from "react-icons/md";
+import { deleteCookie } from "cookies-next";
 
 const Navbar = () => {
   const pathname = usePathname();
+  const router = useRouter();
+  const handleLogout = () => {
+    // Clear user data from localStorage
+    deleteCookie("user");
+    // Redirect to the login page
+    router.push("/login");
+  };
 
   return (
     <div className={styles.container}>
@@ -20,6 +28,9 @@ const Navbar = () => {
           <MdNotifications size={20} />
           <MdPublic size={20} />
         </div>
+        <button className={styles.logoutButton} onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     </div>
   );

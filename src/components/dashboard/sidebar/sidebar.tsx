@@ -16,6 +16,7 @@ import Image from "next/image";
 import styles from "./sidebar.module.css";
 import { title } from "process";
 import path from "path";
+import { getCookie } from "cookies-next";
 
 const menuItems = [
   {
@@ -48,22 +49,22 @@ const menuItems = [
       },
     ],
   },
-  {
-    title: "",
-    list: [
-      {
-        title: "Logout",
-        path: "/login",
-        icon: <MdLogout />,
-      },
-    ],
-  },
+  // {
+  //   title: "",
+  //   list: [
+  //     {
+  //       title: "Logout",
+  //       path: "/login",
+  //       icon: <MdLogout />,
+  //     },
+  //   ],
+  // },
 ];
 
 const sidebar = () => {
   return (
-    <div className="sticky bg-slate-950 h-screen w-full flex flex-col">
-      <div className="p-4 flex-col gap-3">
+    <div className="sticky flex flex-col w-full h-screen bg-slate-950">
+      <div className="flex-col gap-3 p-4">
         <div className="p-3 text-white">Amruta Patil</div>
         <div className="p-3">
           <Image
@@ -78,7 +79,7 @@ const sidebar = () => {
       <ul className="text-white">
         {menuItems.map((cat) => (
           <li className="my-2.5" key={cat.title}>
-            <span className="font-bold text-xs md:text-base">{cat.title}</span>
+            <span className="text-xs font-bold md:text-base">{cat.title}</span>
             {cat.list.map((item) => (
               <MenuLink item={item} key={item.title} />
             ))}

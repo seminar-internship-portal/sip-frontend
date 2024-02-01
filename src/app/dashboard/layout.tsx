@@ -4,27 +4,40 @@ import Sidebar from "@/components/dashboard/sidebar/sidebar";
 import Navbar from "@/components/dashboard/navbar/navbar";
 import React, { ReactNode, useState, useEffect } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
-
+import { useRouter } from "next/navigation";
+import { getCookie } from "cookies-next";
 interface LayoutProps {
   children: ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const router = useRouter();
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   useEffect(() => {
-    if (isSidebarOpen) {
-      document.documentElement.classList.add("overflow-hidden");
-      document.body.classList.add("overflow-hidden");
+    const user = getCookie("user");
+    if (!user) {
+      // If there is no user data, redirect to the login page
+      router.push("/login");
     } else {
-      document.documentElement.classList.remove("overflow-hidden");
-      document.body.classList.remove("overflow-hidden");
+      if (isSidebarOpen) {
+        document.documentElement.classList.add("overflow-hidden");
+        document.body.classList.add("overflow-hidden");
+      } else {
+        document.documentElement.classList.remove("overflow-hidden");
+        document.body.classList.remove("overflow-hidden");
+      }
     }
-  }, [isSidebarOpen]);
+  }, [isSidebarOpen, router]);
+
+  // Return null if there is no user data
+  // if (!getCookie("user")) {
+  //   return null;
+  // }
 
   return (
     <div className="flex h-screen">
