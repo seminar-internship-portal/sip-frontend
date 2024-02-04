@@ -6,6 +6,7 @@ import {
   MdOutlineChat,
   MdPublic,
   MdSearch,
+  MdLogout,
 } from "react-icons/md";
 import { deleteCookie } from "cookies-next";
 
@@ -28,7 +29,11 @@ const Navbar = () => {
           <MdNotifications size={20} />
           <MdPublic size={20} />
         </div>
-        <button className={styles.logoutButton} onClick={handleLogout}>
+        <button
+          className="flex flex-row items-center gap-4 px-4 py-2 rounded-md bg-slate-900 text-white hover:bg-slate-800 focus:outline-none focus:ring focus:border-blue-300"
+          onClick={handleLogout}
+        >
+          <MdLogout size={20} />
           Logout
         </button>
       </div>

@@ -36,7 +36,7 @@ export default function Log() {
       toast.success("already logged in");
       router.push("/dashboard");
     }
-  }, []);
+  }, [router]);
   const onlogin = async () => {
     const apiUrl = `${Baseurl}/${role}/login`;
     const data = {
@@ -129,7 +129,6 @@ export default function Log() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-between w-full">
-            {/* <Link href="/dashboard" className="w-full"> */}
             <Button onClick={onlogin} className="w-full">
               Login
             </Button>

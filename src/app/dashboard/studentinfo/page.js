@@ -3,7 +3,6 @@ import Link from "next/link";
 export default function StudentDetails() {
   return (
     <div>
-      <h1>Hello student 1</h1>
       <ul>
         <li>
           <Link href="/dashboard/studentinfo/1">student 1</Link>

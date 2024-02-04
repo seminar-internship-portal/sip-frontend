@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { downloadToExcel } from "@/lib/xlsx";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -57,31 +58,40 @@ export function DataTable<TData, TValue>({
   return (
     <div className="overflow-hidden">
       <div className="flex justify-between py-10 px-1">
-        <Input
-          placeholder="Search Roll No"
-          value={(table.getColumn("rollNo")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("rollNo")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <div className="flex space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+        <div className="flex flex-row gap-4">
+          <Input
+            placeholder="Search Roll No"
+            value={
+              (table.getColumn("rollNo")?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn("rollNo")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+
+          <Button onClick={() => downloadToExcel()}>Export</Button>
+        </div>
+
+        <div>
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
       <div className="rounded-md border">

@@ -26,8 +26,10 @@ async function getData(): Promise<Student[]> {
     rollNo: item.rollNo,
     prnNo: item.prnNo,
     registrationId: item.registrationId,
+    id: item.id,
   }));
 
+  console.log(students);
   return students;
 }
 

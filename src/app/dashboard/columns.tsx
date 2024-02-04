@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
+import { NextRouter, useRouter } from "next/router";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -70,6 +71,29 @@ export const columns: ColumnDef<Student>[] = [
     accessorKey: "email",
     header: "Email",
   },
+  // {
+  //   accessorKey: "id",
+  //   header: "Id",
+  // },
+
+  {
+    header: "Profile",
+    cell: ({ row }) => {
+      const studentId = row.original.id;
+
+      const handleProfileClick = () => {
+        // Pass the studentId to the profile page
+        goToProfile(studentId);
+      };
+
+      return (
+        <div>
+          <Button onClick={handleProfileClick}>Profile</Button>
+        </div>
+      );
+    },
+  },
+
   {
     id: "actions",
     cell: ({ row }) => {
@@ -97,3 +121,8 @@ export const columns: ColumnDef<Student>[] = [
     },
   },
 ];
+
+const goToProfile = (studentId: string) => {
+  // Use window.location.href to navigate without the router hook
+  window.location.href = `/dashboard/${studentId}`;
+};
