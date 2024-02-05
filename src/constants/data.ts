@@ -2,7 +2,8 @@
 import { Student } from "@/app/dashboard/columns";
 
 function getData(): Promise<Student[]> {
-  return fetch("https://sip-backend-api.onrender.com/api/v1/student", {
+  const Baseurl = process.env.API_BASE_URL;
+  return fetch(`${Baseurl}/student`, {
     next: { revalidate: 10 },
   })
     .then((response) => {

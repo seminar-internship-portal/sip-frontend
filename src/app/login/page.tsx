@@ -31,10 +31,10 @@ export default function Log() {
 
   useEffect(() => {
     // Check if user is already logged in using stored session data in cookies
-    const storedUser = getCookie("user");
+    const storedUser = getCookie("mentor");
     if (storedUser) {
       toast.success("already logged in");
-      router.push("/dashboard");
+      router.push("/mentor/Sdashboard");
     }
   }, [router]);
   const onlogin = async () => {
@@ -52,7 +52,7 @@ export default function Log() {
       setCookie("user", response.data);
       setUser(response.data);
       toast.success(response.data.message);
-      router.push("/dashboard");
+      router.push("/mentor/dashboard");
     } catch (error: any) {
       console.log("login failed  ", error.response.data.message);
       toast.error(error.response.data.message);

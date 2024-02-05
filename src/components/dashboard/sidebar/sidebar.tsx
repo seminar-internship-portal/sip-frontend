@@ -24,12 +24,12 @@ const menuItems = [
     list: [
       {
         title: "Dashboard",
-        path: "/dashboard",
+        path: "/mentor/dashboard",
         icon: <MdDashboard />,
       },
       {
         title: "Profile",
-        path: "/dashboard/profile",
+        path: "/mentor/dashboard/profile",
         icon: <MdSupervisedUserCircle />,
       },
     ],
@@ -39,12 +39,12 @@ const menuItems = [
     list: [
       {
         title: "Internship",
-        path: "/dashboard/internship",
+        path: "/mentor/dashboard/internship",
         icon: <MdWork />,
       },
       {
         title: "Seminar",
-        path: "/dashboard/seminar",
+        path: "/mentor/dashboard/seminar",
         icon: <MdAnalytics />,
       },
     ],

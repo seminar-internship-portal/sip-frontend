@@ -29,7 +29,7 @@ async function getData(): Promise<Student[]> {
     id: item.id,
   }));
 
-  console.log(students);
+  // console.log(students);
   return students;
 }
 
