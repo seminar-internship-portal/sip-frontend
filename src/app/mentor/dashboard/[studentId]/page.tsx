@@ -64,7 +64,7 @@ export default async function StudentPage({
           </div>
           <div className="bg-slate-200 m-10 p-6">
             <div className="flex flex-row space-x-56">
-              <h1 className="m-2 font-medium">Internship Details</h1>
+              <h1 className="m-2 font-medium">Seminar Details</h1>
               <DropdownMenu>
                 <DropdownMenuTrigger className="h-9 px-4 py-2 bg-primary text-primary-foreground shadow hover:bg-primary/90 rounded-xl">
                   Open
