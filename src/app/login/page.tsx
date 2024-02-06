@@ -26,15 +26,15 @@ export default function Log() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [role, setRole] = useState("Student");
+  const [role, setRole] = useState("Mentor");
   const Baseurl = process.env.API_BASE_URL;
 
   useEffect(() => {
     // Check if user is already logged in using stored session data in cookies
-    const storedUser = getCookie("mentor");
+    const storedUser = getCookie("user");
     if (storedUser) {
       toast.success("already logged in");
-      router.push("/mentor/Sdashboard");
+      router.push("/mentor/dashboard");
     }
   }, [router]);
   const onlogin = async () => {
