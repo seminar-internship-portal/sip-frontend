@@ -19,7 +19,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    const user = getCookie("user");
+    const user = getCookie("Mentor");
     if (!user) {
       // If there is no user data, redirect to the login page
       router.push("/login");

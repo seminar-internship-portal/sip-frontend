@@ -26,17 +26,31 @@ export default function Log() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [role, setRole] = useState("Mentor");
+  const [role, setRole] = useState(
+    typeof localStorage !== "undefined"
+      ? localStorage.getItem("role") || "Student"
+      : "Student"
+  );
+
   const Baseurl = process.env.API_BASE_URL;
 
   useEffect(() => {
     // Check if user is already logged in using stored session data in cookies
-    const storedUser = getCookie("user");
-    if (storedUser) {
+    const storedUser = getCookie("Student") || getCookie("Mentor");
+    console.log(storedUser);
+    if (storedUser && role === "Student") {
       toast.success("already logged in");
-      router.push("/mentor/dashboard");
+      router.push("/Student/dashboard");
+    } else if (storedUser && role === "Mentor") {
+      toast.success("already logged in");
+      router.push("/Mentor/dashboard");
     }
   }, [router]);
+
+  useEffect(() => {
+    localStorage.clear();
+    localStorage.setItem("role", role);
+  }, [role]);
   const onlogin = async () => {
     const apiUrl = `${Baseurl}/${role}/login`;
     const data = {
@@ -49,12 +63,21 @@ export default function Log() {
       console.log("login success", response.data);
       // Store user information in cookies
       // setCookie("user", JSON.stringify(response.data), { path: "/" });
-      setCookie("user", response.data);
-      setUser(response.data);
-      toast.success(response.data.message);
-      router.push("/mentor/dashboard");
+      if (role === "Student") {
+        setCookie("Student", response.data);
+        setUser(response.data);
+        toast.success(response.data.message);
+        router.push("/Student/dashboard");
+      }
+
+      if (role === "Mentor") {
+        setCookie("Mentor", response.data);
+        setUser(response.data);
+        toast.success(response.data.message);
+        router.push("/Mentor/dashboard");
+      }
     } catch (error: any) {
-      console.log("login failed  ", error.response.data.message);
+      console.log("login failed  ", error.response.data);
       toast.error(error.response.data.message);
     }
   };

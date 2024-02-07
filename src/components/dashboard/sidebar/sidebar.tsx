@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+
 import {
   MdDashboard,
   MdSupervisedUserCircle,
@@ -18,50 +19,51 @@ import { title } from "process";
 import path from "path";
 import { getCookie } from "cookies-next";
 
-const menuItems = [
-  {
-    title: "",
-    list: [
-      {
-        title: "Dashboard",
-        path: "/mentor/dashboard",
-        icon: <MdDashboard />,
-      },
-      {
-        title: "Profile",
-        path: "/mentor/dashboard/profile",
-        icon: <MdSupervisedUserCircle />,
-      },
-    ],
-  },
-  {
-    title: "",
-    list: [
-      {
-        title: "Internship",
-        path: "/mentor/dashboard/internship",
-        icon: <MdWork />,
-      },
-      {
-        title: "Seminar",
-        path: "/mentor/dashboard/seminar",
-        icon: <MdAnalytics />,
-      },
-    ],
-  },
-  // {
-  //   title: "",
-  //   list: [
-  //     {
-  //       title: "Logout",
-  //       path: "/login",
-  //       icon: <MdLogout />,
-  //     },
-  //   ],
-  // },
-];
-
 const sidebar = () => {
+  let role = localStorage.getItem("role");
+  console.log(role);
+  const menuItems = [
+    {
+      title: "",
+      list: [
+        {
+          title: "Dashboard",
+          path: `/${role}/dashboard`,
+          icon: <MdDashboard />,
+        },
+        {
+          title: "Profile",
+          path: `/${role}/dashboard/profile`,
+          icon: <MdSupervisedUserCircle />,
+        },
+      ],
+    },
+    {
+      title: "",
+      list: [
+        {
+          title: "Internship",
+          path: `/${role}/dashboard/internship`,
+          icon: <MdWork />,
+        },
+        {
+          title: "Seminar",
+          path: `/${role}/dashboard/seminar`,
+          icon: <MdAnalytics />,
+        },
+      ],
+    },
+    // {
+    //   title: "",
+    //   list: [
+    //     {
+    //       title: "Logout",
+    //       path: "/login",
+    //       icon: <MdLogout />,
+    //     },
+    //   ],
+    // },
+  ];
   return (
     <div className="sticky flex flex-col w-full h-screen bg-slate-950">
       <div className="flex-col gap-3 p-4">

@@ -124,5 +124,5 @@ export const columns: ColumnDef<Student>[] = [
 
 const goToProfile = (studentId: string) => {
   // Use window.location.href to navigate without the router hook
-  window.location.href = `/mentor/dashboard/${studentId}`;
+  window.location.href = `/Student/dashboard/${studentId}`;
 };

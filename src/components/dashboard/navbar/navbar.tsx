@@ -15,7 +15,10 @@ const Navbar = () => {
   const router = useRouter();
   const handleLogout = () => {
     // Clear user data from localStorage
-    deleteCookie("user");
+    deleteCookie("Student");
+    deleteCookie("Mentor");
+    localStorage.clear();
+
     // Redirect to the login page
     router.push("/login");
   };
