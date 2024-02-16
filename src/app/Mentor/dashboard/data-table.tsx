@@ -22,15 +22,28 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { downloadToExcel } from "@/lib/xlsx";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useEffect, useState } from "react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  ayear: string;
+  setAyear: (value: string) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  ayear,
+  setAyear,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -69,7 +82,29 @@ export function DataTable<TData, TValue>({
             }
             className="max-w-sm"
           />
-
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">{ayear || "YEAR"}</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>ACEDEMIC YEAR</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup
+                value={ayear}
+                onValueChange={(value) => {
+                  setAyear(value);
+                }}
+              >
+                <DropdownMenuRadioItem value="">All</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="2022-2023">
+                  2022-2023
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="2023-2024">
+                  2023-2024
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button onClick={() => downloadToExcel()}>Export</Button>
         </div>
 
