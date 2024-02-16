@@ -77,7 +77,7 @@ export default function Log() {
         router.push("/Mentor/dashboard");
       }
     } catch (error: any) {
-      console.log("login failed  ", error.response.data);
+      console.log("login failed", error.response.data.message);
       toast.error(error.response.data.message);
     }
   };
