@@ -2,9 +2,9 @@
 import xlsx, { IJsonSheet, ISettings } from "json-as-xlsx";
 import getData from "@/constants/data";
 
-export async function downloadToExcel() {
+export async function downloadToExcel(year:string) {
   try {
-    const studentsData = await getData();
+    const studentsData = await getData(year);
 
     let columns: IJsonSheet[] = [
       {
