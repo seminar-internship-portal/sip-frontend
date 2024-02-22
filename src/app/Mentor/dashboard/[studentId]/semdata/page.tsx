@@ -26,9 +26,12 @@ import { Label } from "@/components/ui/label";
 const StudentPage = ({ params }: { params: { studentId: string } }) => {
   const [student, setStudent] = useState<any>({});
   const [smarks, setSmarks] = useState<any[]>([]);
-  const [updatedMarks, setUpdatedMarks] = useState<any[]>([]);
-  const [totalMarks, setTotalMarks] = useState<number>(0);
+  const [updatedMarks, setUpdatedMarks] = useState<
+    { evaluationCriteria: string; marks: string }[]
+  >([]);
 
+  const [totalMarks, setTotalMarks] = useState<number>(0);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -47,7 +50,6 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
           (total: any, mark: any) => total + mark.studCriteriaMarks,
           0
         );
-
         // Set total seminar marks in state
         setTotalMarks(seminarTotalMarks);
         const initialUpdatedMarks = smarksRes.data.data.map((mark: any) => ({
@@ -70,7 +72,8 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
     setUpdatedMarks(updated);
   };
 
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     try {
       const studentId = params.studentId;
       const baseUrl = process.env.API_BASE_URL;
@@ -79,9 +82,17 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
       // Send POST request with updated marks
       await axios.post(evaluateUrl, updatedMarks);
       console.log(updatedMarks);
-      location.reload();
+      // location.reload();
+
+      const total = updatedMarks.reduce(
+        (total: any, mark: any) => total + parseInt(mark.marks),
+        0
+      );
+
+      setTotalMarks(total);
 
       console.log("Changes saved successfully!");
+      setOpen(false);
     } catch (error) {
       console.error("Error saving changes:", error);
     }
@@ -121,7 +132,8 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
                         >
                           <p className="font-semibold">{mark.criteriaName}</p>
                           <p>
-                            {mark.studCriteriaMarks} / {mark.criteriaTotalMarks}
+                            {updatedMarks[index]?.marks} /{" "}
+                            {mark.criteriaTotalMarks}
                           </p>
                         </div>
                       ))}
@@ -132,7 +144,7 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-end">
-                    <Dialog>
+                    <Dialog open={open} onOpenChange={setOpen}>
                       <DialogTrigger asChild>
                         <Button>Edit</Button>
                       </DialogTrigger>
@@ -144,38 +156,34 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
                             done.
                           </DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-3 py-3">
-                          {smarks.map((mark: any, index: any) => (
-                            <div
-                              key={index}
-                              className="grid grid-cols-4 items-center gap-4"
-                            >
-                              <Label
-                                htmlFor={`criteria-${index}`}
-                                className="text-right"
+                        <form onSubmit={handleSaveChanges}>
+                          <div className="grid gap-3 py-3">
+                            {smarks.map((mark: any, index: any) => (
+                              <div
+                                key={index}
+                                className="grid grid-cols-4 items-center gap-4"
                               >
-                                {mark.criteriaName}
-                              </Label>
-                              <Input
-                                id={`criteria-${index}`}
-                                defaultValue={mark.studCriteriaMarks}
-                                className="col-span-3"
-                                onChange={(event) =>
-                                  handleMarkChange(
-                                    index,
-                                    // mark.criteriaId,
-                                    event.target.value
-                                  )
-                                }
-                              />
-                            </div>
-                          ))}
-                        </div>
-                        <DialogFooter>
-                          <Button onClick={handleSaveChanges} type="submit">
-                            Save changes
-                          </Button>
-                        </DialogFooter>
+                                <Label
+                                  htmlFor={`criteria-${index}`}
+                                  className="text-right"
+                                >
+                                  {mark.criteriaName}
+                                </Label>
+                                <Input
+                                  id={`criteria-${index}`}
+                                  defaultValue={updatedMarks[index]?.marks}
+                                  className="col-span-3"
+                                  onChange={(event) =>
+                                    handleMarkChange(index, event.target.value)
+                                  }
+                                />
+                              </div>
+                            ))}
+                          </div>
+                          <DialogFooter>
+                            <Button type="submit">Save changes</Button>
+                          </DialogFooter>
+                        </form>
                       </DialogContent>
                     </Dialog>
                   </CardFooter>

@@ -1,5 +1,4 @@
 "use client";
-
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import {
@@ -23,13 +22,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const intermarks = ({ params }: { params: { studentId: string } }) => {
+const Intermarks = ({ params }: { params: { studentId: string } }) => {
   const [student, setStudent] = useState<any>({});
+
+  // storing all the total marks
   const [totalMarks, setTotalMarks] = useState<number>(0);
+
+  // storing all the initial marks
   const [interMarks, setInterMarks] = useState<any[]>([]);
+
+  // storing all the updated marks
   const [updatedMarks, setUpdatedMarks] = useState<
     { evaluationCriteria: string; marks: string }[]
   >([]);
+
+  //dailog box open or close
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,14 +52,7 @@ const intermarks = ({ params }: { params: { studentId: string } }) => {
         const interMarksRes = await axios.get(interMarksUrl);
         setInterMarks(interMarksRes.data.data);
 
-        //calcualate total
-        const total = interMarksRes.data.data.reduce(
-          (total: any, mark: any) => total + mark.studCriteriaMarks,
-          0
-        );
-        setTotalMarks(total);
-
-        // storing all the initial marks in the state
+        // Storing all the initial marks in the state
         const initialUpdatedMarks = interMarksRes.data.data.map(
           (mark: any) => ({
             evaluationCriteria: mark.criteriaId,
@@ -59,6 +60,13 @@ const intermarks = ({ params }: { params: { studentId: string } }) => {
           })
         );
         setUpdatedMarks(initialUpdatedMarks);
+
+        // Calculate total
+        const total = interMarksRes.data.data.reduce(
+          (total: any, mark: any) => total + mark.studCriteriaMarks,
+          0
+        );
+        setTotalMarks(total);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -75,7 +83,8 @@ const intermarks = ({ params }: { params: { studentId: string } }) => {
     setUpdatedMarks(updated);
   };
 
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Prevent default form submission behavior
     try {
       const studentId = params.studentId;
       const baseUrl = process.env.API_BASE_URL;
@@ -84,9 +93,16 @@ const intermarks = ({ params }: { params: { studentId: string } }) => {
       // Send POST request with updated marks
       await axios.post(evaluateUrl, updatedMarks);
       console.log(updatedMarks);
-      location.reload();
+      // location.reload();
+
+      const total = updatedMarks.reduce(
+        (total: any, mark: any) => total + parseInt(mark.marks),
+        0
+      );
+      setTotalMarks(total);
 
       console.log("Changes saved successfully!");
+      setOpen(false);
     } catch (error) {
       console.error("Error saving changes:", error);
     }
@@ -129,7 +145,8 @@ const intermarks = ({ params }: { params: { studentId: string } }) => {
                         >
                           <p className="font-semibold">{mark.criteriaName}</p>
                           <p>
-                            {mark.studCriteriaMarks} / {mark.criteriaTotalMarks}
+                            {updatedMarks[index]?.marks} /{" "}
+                            {mark.criteriaTotalMarks}
                           </p>
                         </div>
                       ))}
@@ -140,7 +157,7 @@ const intermarks = ({ params }: { params: { studentId: string } }) => {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-end">
-                    <Dialog>
+                    <Dialog open={open} onOpenChange={setOpen}>
                       <DialogTrigger asChild>
                         <Button>Edit</Button>
                       </DialogTrigger>
@@ -152,38 +169,34 @@ const intermarks = ({ params }: { params: { studentId: string } }) => {
                             done.
                           </DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-3 py-3">
-                          {interMarks.map((mark: any, index: any) => (
-                            <div
-                              key={index}
-                              className="grid grid-cols-4 items-center gap-4"
-                            >
-                              <Label
-                                htmlFor={`criteria-${index}`}
-                                className="text-right"
+                        <form onSubmit={handleSaveChanges}>
+                          <div className="grid gap-3 py-3">
+                            {interMarks.map((mark: any, index: any) => (
+                              <div
+                                key={index}
+                                className="grid grid-cols-4 items-center gap-4"
                               >
-                                {mark.criteriaName}
-                              </Label>
-                              <Input
-                                id={`criteria-${index}`}
-                                defaultValue={mark.studCriteriaMarks}
-                                className="col-span-3"
-                                onChange={(event) =>
-                                  handleMarkChange(
-                                    index,
-                                    // mark.criteriaId,
-                                    event.target.value
-                                  )
-                                }
-                              />
-                            </div>
-                          ))}
-                        </div>
-                        <DialogFooter>
-                          <Button onClick={handleSaveChanges} type="submit">
-                            Save changes
-                          </Button>
-                        </DialogFooter>
+                                <Label
+                                  htmlFor={`criteria-${index}`}
+                                  className="text-right"
+                                >
+                                  {mark.criteriaName}
+                                </Label>
+                                <Input
+                                  id={`criteria-${index}`}
+                                  defaultValue={updatedMarks[index]?.marks}
+                                  className="col-span-3"
+                                  onChange={(event) =>
+                                    handleMarkChange(index, event.target.value)
+                                  }
+                                />
+                              </div>
+                            ))}
+                          </div>
+                          <DialogFooter>
+                            <Button type="submit">Save changes</Button>
+                          </DialogFooter>
+                        </form>
                       </DialogContent>
                     </Dialog>
                   </CardFooter>
@@ -197,4 +210,4 @@ const intermarks = ({ params }: { params: { studentId: string } }) => {
   );
 };
 
-export default intermarks;
+export default Intermarks;
