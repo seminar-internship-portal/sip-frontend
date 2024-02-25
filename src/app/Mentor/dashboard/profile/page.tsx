@@ -113,7 +113,7 @@ const Profile = () => {
               </h4>
               {tags.map((tag) => (
                 <>
-                  <div key={tag} className="text-sm">
+                  <div key={tag} className="text-md">
                     {tag}
                   </div>
                   <Separator className="my-2" />
