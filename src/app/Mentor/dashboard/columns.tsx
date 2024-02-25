@@ -14,8 +14,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { NextRouter, useRouter } from "next/router";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type Student = {
   id: string;
   username: string;

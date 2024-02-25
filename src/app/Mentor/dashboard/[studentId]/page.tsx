@@ -110,8 +110,7 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
                         <DialogHeader>
                           <DialogTitle>Edit Marks</DialogTitle>
                           <DialogDescription>
-                            Make changes to marks here. Click save when you're
-                            done.
+                        
                           </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-3 py-3">
@@ -174,8 +173,7 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
                         <DialogHeader>
                           <DialogTitle>Edit Marks</DialogTitle>
                           <DialogDescription>
-                            Make changes to marks here. Click save when you're
-                            done.
+                  
                           </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-3 py-3">
