@@ -88,19 +88,6 @@ const Profile = () => {
                   </Label>
                   <p>{data.mobileNo}</p>
                 </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="students" className="font-bold">
-                    Students
-                  </Label>
-                  <ul>
-                    {data.students.map((student, index) => (
-                      <li key={index}>
-                        <p>Student Name: {student.name}</p>
-                        <p>Student ID: {student.id}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
               </form>
             )}
           </CardContent>
