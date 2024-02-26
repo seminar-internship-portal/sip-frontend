@@ -29,28 +29,38 @@ interface Response {
   updatedAt: string;
   __v: number;
 }
-const tags = Array.from({ length: 50 }).map(
-  (_, i, a) => `v1.2.0-beta.${a.length - i}`
-);
 
 const Profile = () => {
   const [data, setData] = useState<Response | null>(null);
+  const [studentnumber, setStudentnumber] = useState([]);
 
   useEffect(() => {
-    // Fetch data when the component mounts
+    // Fetch mentor data when the component mounts
     axios
       .get("http://localhost:8000/api/v1/mentor/65b3a6acf0366cfc883e0b33")
       .then((res) => {
         setData(res.data.data);
       })
       .catch((error) => {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching mentor data:", error);
+      });
+
+    // Fetch student data when the component mounts
+    axios
+      .get("https://sip-backend-api.onrender.com/api/v1/student")
+      .then((res) => {
+        setStudentnumber(res.data.data || []); // Assuming data is the array of students
+      })
+      .catch((error) => {
+        console.error("Error fetching student data:", error);
       });
   }, []);
 
+  // console.log(studentnumber.length);
+
   return (
     <div className="m-12">
-      <Card className="w-full p-6 bg-white rounded-md drop-shadow-md transition-all duration-100 ease-in-out delay-100 hover:drop-shadow-2xl flex flex-row">
+      <Card className="w-full p-6 bg-white rounded-md drop-shadow-md transition-all duration-100 ease-in-out delay-100 hover:drop-shadow-2xl flex flex-row gap-28">
         <div className="">
           <CardHeader className="py-12">
             <Image
@@ -92,22 +102,9 @@ const Profile = () => {
             )}
           </CardContent>
         </div>
-        <div className="m-12 px-28">
-          <ScrollArea className="h-96 w-96 rounded-md border">
-            <div className="p-4">
-              <h4 className="mb-4 text-sm font-bold leading-none">
-                Students Appointed
-              </h4>
-              {tags.map((tag) => (
-                <>
-                  <div key={tag} className="text-md">
-                    {tag}
-                  </div>
-                  <Separator className="my-2" />
-                </>
-              ))}
-            </div>
-          </ScrollArea>
+        <div className="w-1/2 flex justify-center content-center gap-10 flex-col items-center">
+          <h1 className="font-bold text-2xl"> Students Appointed</h1>
+          <div className="font-bold text-2xl">{studentnumber.length}</div>
         </div>
       </Card>
     </div>
