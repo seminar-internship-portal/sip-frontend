@@ -1,6 +1,7 @@
 // layout.tsx
 "use client";
-import Sidebar from "@/components/dashboard/sidebar/sidebar";
+// import Sidebar from "@/components/dashboard/sidebar/sidebar";
+import Sidebar from "@/components/dashboard/sidebar/studentside";
 import Navbar from "@/components/dashboard/navbar/navbar";
 import React, { ReactNode, useState, useEffect } from "react";
 import { FiMenu, FiX } from "react-icons/fi";

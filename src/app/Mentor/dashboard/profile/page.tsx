@@ -1,112 +1,178 @@
+// Profile.tsx
 "use client";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { selectMentor, updateProfile } from "../../../features/username/Slice";
 
-interface Response {
-  _id: string;
+interface ProfileData {
+  name: string;
   username: string;
-  registrationId: string;
   email: string;
-  fullName: string;
   mobileNo: string;
-  avatar: string;
-  students: any[];
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
 }
 
-const Profile = () => {
-  const [data, setData] = useState<Response | null>(null);
-  const [studentnumber, setStudentnumber] = useState([]);
+const Profile: React.FC = () => {
+  const dispatch = useDispatch();
+  const mentor = useSelector(selectMentor);
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
-    // Fetch mentor data when the component mounts
-    axios
-      .get("http://localhost:8000/api/v1/mentor/65b3a6acf0366cfc883e0b33")
-      .then((res) => {
-        setData(res.data.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching mentor data:", error);
-      });
+    if (mentor) {
+      setName(mentor.fullName);
+      setUsername(mentor.username);
+    }
+  }, [mentor]);
 
-    // Fetch student data when the component mounts
-    axios
-      .get("https://sip-backend-api.onrender.com/api/v1/student")
-      .then((res) => {
-        setStudentnumber(res.data.data || []); // Assuming data is the array of students
-      })
-      .catch((error) => {
-        console.error("Error fetching student data:", error);
-      });
-  }, []);
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
+  };
 
-  // console.log(studentnumber.length);
+  const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(event.target.value);
+  };
+
+  const submitProfileHandler = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+
+    const updatedData = {
+      ...mentor, // Include existing data
+      fullName: name,
+      username: username,
+    };
+
+    // Update profile in Redux store
+    dispatch(updateProfile(updatedData));
+
+    try {
+      // Update profile in the backend API
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      });
+      if (response.ok) {
+        console.log("Profile updated successfully in the backend");
+      } else {
+        console.error("Failed to update profile in the backend");
+      }
+    } catch (error) {
+      console.error("Error occurred while updating profile:", error);
+    }
+  };
 
   return (
     <div className="m-12">
-      <Card className="w-full p-6 bg-white rounded-md drop-shadow-md transition-all duration-100 ease-in-out delay-100 hover:drop-shadow-2xl flex flex-row gap-28">
-        <div className="">
-          <CardHeader className="py-12">
-            <Image
-              className="object-cover rounded-full"
-              src="/noavatar.png"
-              alt="/public/noavatar.png"
-              width={50}
-              height={50}
-            />
-          </CardHeader>
-          <CardContent>
-            {data && (
-              <form className="space-y-4">
-                <div className="flex flex-col space-y-1.5">
+      <Card className="bg-white rounded-md shadow-md hover:shadow-2xl transition duration-300 ease-in-out">
+        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 items-center">
+          <div className="flex justify-center mb-4 sm:mb-0">
+            <CardHeader className="w-32 h-32 rounded-full overflow-hidden">
+              <Image
+                src="/noavatar.png"
+                alt="No Avatar"
+                width={128}
+                height={128}
+                layout="responsive"
+              />
+            </CardHeader>
+          </div>
+          <div className="space-y-4 text-center sm:text-left">
+            {mentor && (
+              <form className="space-y-3">
+                <div className="flex flex-col items-center sm:items-start">
                   <Label htmlFor="name" className="font-bold">
                     Name
                   </Label>
-                  <h1>{data.fullName}</h1>
+                  <p>{mentor.fullName}</p>
                 </div>
-                <div className="flex flex-col space-y-1.5">
+                <div className="flex flex-col items-center sm:items-start">
                   <Label htmlFor="username" className="font-bold">
                     Username
                   </Label>
-                  <p>{data.username}</p>
+                  <p>{mentor.username}</p>
                 </div>
-                <div className="flex flex-col space-y-1.5">
+                <div className="flex flex-col items-center sm:items-start">
                   <Label htmlFor="email" className="font-bold">
                     Email
                   </Label>
-                  <p>{data.email}</p>
+                  <p>{mentor.email}</p>
                 </div>
-                <div className="flex flex-col space-y-1.5">
+                <div className="flex flex-col items-center sm:items-start">
                   <Label htmlFor="mobileNo" className="font-bold">
                     Mobile Number
                   </Label>
-                  <p>{data.mobileNo}</p>
+                  <p>{mentor.mobileNo}</p>
                 </div>
               </form>
             )}
-          </CardContent>
-        </div>
-        <div className="w-1/2 flex justify-center content-center gap-10 flex-col items-center">
-          <h1 className="font-bold text-2xl"> Students Appointed</h1>
-          <div className="font-bold text-2xl">{studentnumber.length}</div>
+          </div>
         </div>
       </Card>
+
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="m-4 p-4 bg-black text-white rounded-md ">
+            Edit Profile
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit profile</DialogTitle>
+            <DialogDescription>
+              Make changes to your profile here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submitProfileHandler}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Name
+                </Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={name}
+                  onChange={handleNameChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="username" className="text-right">
+                  Username
+                </Label>
+                <Input
+                  id="username"
+                  name="username"
+                  value={username}
+                  onChange={handleUsernameChange}
+                  className="col-span-3"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

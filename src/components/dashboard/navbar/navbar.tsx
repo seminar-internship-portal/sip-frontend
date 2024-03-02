@@ -9,18 +9,23 @@ import {
   MdLogout,
 } from "react-icons/md";
 import { deleteCookie } from "cookies-next";
-
+import { clearStudent } from "@/app/features/studentname/slice";
+import { clearMentor } from "@/app/features/username/Slice";
+import { useDispatch } from "react-redux";
 const Navbar = () => {
+  const dispatch = useDispatch();
   const pathname = usePathname();
   const router = useRouter();
   const handleLogout = () => {
     // Clear user data from localStorage
+    router.push("/login");
     deleteCookie("Student");
     deleteCookie("Mentor");
-    localStorage.clear();
 
+    localStorage.clear();
+    dispatch(clearStudent());
+    dispatch(clearMentor());
     // Redirect to the login page
-    router.push("/login");
   };
 
   return (

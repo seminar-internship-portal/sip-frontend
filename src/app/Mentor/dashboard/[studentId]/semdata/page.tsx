@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -74,27 +75,27 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
 
   const handleSaveChanges = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     try {
       const studentId = params.studentId;
       const baseUrl = process.env.API_BASE_URL;
       const evaluateUrl = `${baseUrl}/mentor/seminar/evaluate/${studentId}`;
 
       // Send POST request with updated marks
-      await axios.post(evaluateUrl, updatedMarks);
+      const response = await axios.post(evaluateUrl, updatedMarks);
       console.log(updatedMarks);
       // location.reload();
-
       const total = updatedMarks.reduce(
         (total: any, mark: any) => total + parseInt(mark.marks),
         0
       );
 
       setTotalMarks(total);
-
+      toast.success(response.data.message);
       console.log("Changes saved successfully!");
       setOpen(false);
-    } catch (error) {
-      console.error("Error saving changes:", error);
+    } catch (error: any) {
+      toast.error("Error saving changes:", error.response.data);
     }
   };
   return (
@@ -139,7 +140,7 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
                       ))}
                       <div className="flex justify-between p-3 border border-gray-200 rounded-md">
                         <p className="font-semibold">Total Marks</p>
-                        <p>{totalMarks} / 30</p>
+                        <p>{totalMarks} / 50</p>
                       </div>
                     </div>
                   </CardContent>

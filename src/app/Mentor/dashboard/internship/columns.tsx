@@ -70,6 +70,9 @@ export const columns: ColumnDef<Student>[] = [
   {
     accessorKey: "inter_status",
     header: "Internship Status",
+    cell: ({ row }) => (
+      <span className="bg-green-400 p-2  rounded-md"> Done </span>
+    ),
   },
   // {
   //   accessorKey: "id",

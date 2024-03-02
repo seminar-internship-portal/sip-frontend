@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/ui/toast.js", "src/components/ui/toast.js", "src/components/dashboard/sidebar/sidebar.jsx", "src/app/page.tsx", "src/app/dashboard/studentinfo/page.js", "src/context/UserContextProvider.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/ui/toast.js", "src/components/ui/toast.js", "src/components/dashboard/sidebar/sidebar.jsx", "src/app/page.tsx", "src/app/dashboard/studentinfo/page.js", "src/context/UserContextProvider.jsx", "src/app/features/username/provider.tsx", "src/app/store.js", "src/app/features/username/Slice.js"],
   "exclude": ["node_modules"]
 }

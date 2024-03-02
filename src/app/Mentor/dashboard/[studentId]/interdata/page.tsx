@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import toast from "react-hot-toast";
 
 const Intermarks = ({ params }: { params: { studentId: string } }) => {
   const [student, setStudent] = useState<any>({});
@@ -91,7 +92,7 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
       const evaluateUrl = `${baseUrl}/mentor/internship/evaluate/${studentId}`;
 
       // Send POST request with updated marks
-      await axios.post(evaluateUrl, updatedMarks);
+      const response = await axios.post(evaluateUrl, updatedMarks);
       console.log(updatedMarks);
       // location.reload();
 
@@ -100,11 +101,11 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
         0
       );
       setTotalMarks(total);
-
+      toast.success(response.data.message);
       console.log("Changes saved successfully!");
       setOpen(false);
-    } catch (error) {
-      console.error("Error saving changes:", error);
+    } catch (error: any) {
+      toast.error("Error saving changes:", error.response.data);
     }
   };
 

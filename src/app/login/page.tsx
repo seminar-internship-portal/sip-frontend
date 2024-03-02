@@ -21,6 +21,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
+import { useDispatch } from "react-redux";
+import { setMentor } from "../features/username/Slice";
+import { setStudent } from "../features/studentname/slice";
 export default function Log() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -51,6 +54,8 @@ export default function Log() {
     localStorage.clear();
     localStorage.setItem("role", role);
   }, [role]);
+
+  const dispatch = useDispatch();
   const onlogin = async () => {
     const apiUrl = `${Baseurl}/${role}/login`;
     const data = {
@@ -66,13 +71,17 @@ export default function Log() {
       if (role === "Student") {
         setCookie("Student", response.data);
         setUser(response.data);
+        console.log(response.data.data?.student);
+        dispatch(setStudent(response.data.data?.student));
         toast.success(response.data.message);
         router.push("/Student/dashboard");
       }
 
       if (role === "Mentor") {
         setCookie("Mentor", response.data);
+        console.log(response.data);
         setUser(response.data);
+        dispatch(setMentor(response.data.data?.mentor));
         toast.success(response.data.message);
         router.push("/Mentor/dashboard");
       }

@@ -1,20 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
+
 import {
   MdDashboard,
   MdSupervisedUserCircle,
+  MdShoppingBag,
+  MdAttachMoney,
   MdWork,
   MdAnalytics,
+  MdPeople,
+  MdOutlineSettings,
+  MdHelpCenter,
+  MdLogout,
 } from "react-icons/md";
 import MenuLink from "./menuLink/menuLink";
 import Image from "next/image";
+import styles from "./sidebar.module.css";
+import { title } from "process";
+import path from "path";
+import { getCookie } from "cookies-next";
+// import { selectMentor } from "@/app/features/username/Slice";
+import { selectStudent } from "@/app/features/studentname/slice";
 import { useSelector } from "react-redux";
-import { selectMentor } from "@/app/features/username/Slice";
-
-const Sidebar = () => {
-  // Fetch mentor data from Redux
-  const mentor = useSelector(selectMentor);
+const sidebar = () => {
+  const student = useSelector(selectStudent);
   let role = localStorage.getItem("role");
-
+  console.log(role);
   const menuItems = [
     {
       title: "",
@@ -46,14 +56,22 @@ const Sidebar = () => {
         },
       ],
     },
+    // {
+    //   title: "",
+    //   list: [
+    //     {
+    //       title: "Logout",
+    //       path: "/login",
+    //       icon: <MdLogout />,
+    //     },
+    //   ],
+    // },
   ];
-
   return (
     <div className="sticky flex flex-col w-full h-screen bg-slate-950">
-      {/* Render mentor data if it exists */}
-      {mentor && (
+      {student && (
         <div className="flex-col gap-3 p-4">
-          <div className="p-3 text-white">{mentor.username}</div>
+          <div className="p-3 text-white">{student.username}</div>
           <div className="p-3">
             <Image
               className="object-cover rounded-full"
@@ -65,7 +83,7 @@ const Sidebar = () => {
           </div>
         </div>
       )}
-      {/* Render menu items */}
+
       <ul className="text-white">
         {menuItems.map((cat) => (
           <li className="my-2.5" key={cat.title}>
@@ -80,4 +98,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default sidebar;
