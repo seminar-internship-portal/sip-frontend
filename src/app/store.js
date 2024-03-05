@@ -4,6 +4,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import studentReducer from "./features/studentname/slice";
 import mentorReducer from "./features/username/Slice"; // Updated the path accordingly
+import adminReducer from "./features/adminname/slice";
 import {
   FLUSH,
   REHYDRATE,
@@ -39,11 +40,13 @@ const persistConfig = {
 
 const persistedMentorReducer = persistReducer(persistConfig, mentorReducer);
 const persistedstudentReducer = persistReducer(persistConfig, studentReducer);
+const persistedadminReducer = persistReducer(persistConfig, adminReducer);
 
 const store = configureStore({
   reducer: {
     mentor: persistedMentorReducer,
     student: persistedstudentReducer,
+    admin: persistedadminReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

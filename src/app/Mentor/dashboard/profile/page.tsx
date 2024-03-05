@@ -87,12 +87,14 @@ const Profile: React.FC = () => {
         console.error("Mentor cookie not found");
         return;
       }
+      console.log(mentorCookie);
 
       const { accessToken } = JSON.parse(mentorCookie);
-
+      console.log(accessToken);
       const headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
+        credentials: "include",
       };
 
       const response = await fetch(
@@ -132,6 +134,7 @@ const Profile: React.FC = () => {
       }
 
       const { accessToken } = JSON.parse(mentorCookie);
+      console.log(accessToken);
 
       const headers = {
         "Content-Type": "application/json",

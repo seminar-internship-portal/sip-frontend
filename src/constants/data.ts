@@ -1,5 +1,5 @@
 // data.ts (getData)
-import { Student } from "@/app/Mentor/dashboard/columns";
+import { Student } from "@/app/Mentor/columns";
 
 function getData(year : string): Promise<Student[]> {
   const Baseurl = process.env.API_BASE_URL;

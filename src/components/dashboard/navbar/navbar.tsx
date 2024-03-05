@@ -12,6 +12,7 @@ import { deleteCookie } from "cookies-next";
 import { clearStudent } from "@/app/features/studentname/slice";
 import { clearMentor } from "@/app/features/username/Slice";
 import { useDispatch } from "react-redux";
+import { clearAdmin } from "@/app/features/adminname/slice";
 const Navbar = () => {
   const dispatch = useDispatch();
   const pathname = usePathname();
@@ -21,10 +22,13 @@ const Navbar = () => {
     router.push("/login");
     deleteCookie("Student");
     deleteCookie("Mentor");
+    deleteCookie("Admin");
 
     localStorage.clear();
     dispatch(clearStudent());
     dispatch(clearMentor());
+    dispatch(clearAdmin());
+
     // Redirect to the login page
   };
 

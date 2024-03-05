@@ -24,6 +24,8 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useDispatch } from "react-redux";
 import { setMentor } from "../features/username/Slice";
 import { setStudent } from "../features/studentname/slice";
+import { setAdmin } from "@/app/features/adminname/slice";
+
 export default function Log() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -39,7 +41,8 @@ export default function Log() {
 
   useEffect(() => {
     // Check if user is already logged in using stored session data in cookies
-    const storedUser = getCookie("Student") || getCookie("Mentor");
+    const storedUser =
+      getCookie("Student") || getCookie("Mentor") || getCookie("Admin");
     console.log(storedUser);
     if (storedUser && role === "Student") {
       toast.success("already logged in");
@@ -47,6 +50,9 @@ export default function Log() {
     } else if (storedUser && role === "Mentor") {
       toast.success("already logged in");
       router.push("/Mentor/dashboard");
+    } else if (storedUser && role === "Admin") {
+      toast.success("already logged in");
+      router.push("/admin/dashboard");
     }
   }, [router]);
 
@@ -57,7 +63,8 @@ export default function Log() {
 
   const dispatch = useDispatch();
   const onlogin = async () => {
-    const apiUrl = `${Baseurl}/${role}/login`;
+    const apiUrl = `${Baseurl}/${role.toLowerCase()}/login`;
+    console.log(apiUrl);
     const data = {
       email,
       password,
@@ -69,7 +76,7 @@ export default function Log() {
       // Store user information in cookies
       // setCookie("user", JSON.stringify(response.data), { path: "/" });
       if (role === "Student") {
-        setCookie("Student", response.data);
+        setCookie("Student", response.data.data);
         setUser(response.data);
         console.log(response.data.data?.student);
         dispatch(setStudent(response.data.data?.student));
@@ -78,12 +85,20 @@ export default function Log() {
       }
 
       if (role === "Mentor") {
-        setCookie("Mentor", response.data);
+        setCookie("Mentor", response.data.data);
         console.log(response.data);
         setUser(response.data);
         dispatch(setMentor(response.data.data?.mentor));
         toast.success(response.data.message);
         router.push("/Mentor/dashboard");
+      }
+      if (role === "Admin") {
+        setCookie("Admin", response.data.data);
+        console.log(response.data);
+        setUser(response.data);
+        dispatch(setAdmin(response.data.data?.admin));
+        toast.success(response.data.message);
+        router.push("/admin/dashboard");
       }
     } catch (error: any) {
       console.log("login failed", error.response.data.message);
