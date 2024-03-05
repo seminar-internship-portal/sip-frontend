@@ -219,9 +219,7 @@ const Profile: React.FC = () => {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit profile</DialogTitle>
-            <DialogDescription>
-              Make changes to your profile here. Click save when you're done.
-            </DialogDescription>
+            <DialogDescription></DialogDescription>
           </DialogHeader>
           <form onSubmit={submitProfileHandler}>
             <div className="grid gap-4 py-4">
@@ -277,9 +275,7 @@ const Profile: React.FC = () => {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit profile</DialogTitle>
-            <DialogDescription>
-              Make changes to your Password here. Click save when you're done.
-            </DialogDescription>
+            <DialogDescription></DialogDescription>
           </DialogHeader>
           <form onSubmit={submitPassHandler}>
             <div className="grid gap-4 py-4">
