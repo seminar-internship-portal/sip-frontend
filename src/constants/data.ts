@@ -1,7 +1,7 @@
 // data.ts (getData)
-import { Student } from "@/app/Mentor/columns";
+import { Student } from "@/app/Mentor/dashboard/columns";
 
-function getData(year : string): Promise<Student[]> {
+function getData(year: string): Promise<Student[]> {
   const Baseurl = process.env.API_BASE_URL;
   return fetch(`${Baseurl}/student?year=${year}`, {
     next: { revalidate: 10 },
