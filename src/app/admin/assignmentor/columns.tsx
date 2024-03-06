@@ -112,6 +112,7 @@ export const columns: ColumnDef<Student>[] = [
             >
               Copy Student ID
             </DropdownMenuItem>
+
             <DropdownMenuSeparator />
           </DropdownMenuContent>
         </DropdownMenu>
