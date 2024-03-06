@@ -34,6 +34,11 @@ const sidebar = () => {
           path: `/${role?.toLowerCase()}/dashboard`,
           icon: <MdDashboard />,
         },
+      ],
+    },
+    {
+      title: "Add new ",
+      list: [
         {
           title: "Mentor",
           path: `/${role?.toLowerCase()}/mentor`,
@@ -47,7 +52,7 @@ const sidebar = () => {
       ],
     },
     {
-      title: "",
+      title: "Changes",
       list: [
         {
           title: "Assign Mentor",
@@ -56,7 +61,7 @@ const sidebar = () => {
         },
         {
           title: "Evaluation",
-          path: `/${role?.toLowerCase()}/evaluate`,
+          path: `/${role?.toLowerCase()}/evaluation`,
           icon: <MdAnalytics />,
         },
       ],
