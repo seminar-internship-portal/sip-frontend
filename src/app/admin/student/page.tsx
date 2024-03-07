@@ -12,9 +12,9 @@ const YourComponent = () => {
   };
 
   return (
-    <div className="flex justify-center items-center gap-8">
+    <div className="flex justify-center items-center gap-8 m-32">
       <div
-        className="w-[50vh] h-[30vh] cursor-pointer bg-blue-200 rounded-xl"
+        className="w-[50vh] h-[30vh] cursor-pointer bg-blue-300 rounded-xl"
         onClick={(e) => handleAddStudentClick(e, "createnew")}
       >
         <div className="h-full w-full flex justify-center items-center flex-col">
@@ -22,7 +22,7 @@ const YourComponent = () => {
         </div>
       </div>
       <div
-        className="w-[50vh] h-[30vh] cursor-pointer bg-red-200 rounded-xl "
+        className="w-[50vh] h-[30vh] cursor-pointer bg-red-300 rounded-xl "
         onClick={(e) => handleAddStudentClick(e, "delete")}
       >
         <div className="h-full w-full flex justify-center items-center flex-col">

@@ -135,7 +135,7 @@ const Page = () => {
                     <div className="md:col-span-5">
                       <label htmlFor="mobileNo">Mobile No</label>
                       <input
-                        type="number"
+                        type="text"
                         name="mobileNo"
                         id="mobileNo"
                         className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
@@ -157,7 +157,7 @@ const Page = () => {
                     <div className="md:col-span-5">
                       <label htmlFor="rollNo">Roll No</label>
                       <input
-                        type="number"
+                        type="text"
                         name="rollNo"
                         id="rollNo"
                         className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
@@ -172,8 +172,9 @@ const Page = () => {
                   <Button
                     type="submit"
                     className="flex m-4 p-4 bg-black text-white rounded-md"
+                    variant={"ghost"}
                   >
-                    Submit
+                    Create Student
                   </Button>
                 </div>
               </form>

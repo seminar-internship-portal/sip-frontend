@@ -18,7 +18,7 @@ const YourComponent = () => {
         onClick={(e) => handleAddMentorClick(e, "internship")}
       >
         <div className="h-full w-full flex justify-center items-center flex-col">
-          <p className="text-center">Intership</p>
+          <p className="text-center text-xl">Internship</p>
         </div>
       </div>
       <div
@@ -26,7 +26,7 @@ const YourComponent = () => {
         onClick={(e) => handleAddMentorClick(e, "seminar")}
       >
         <div className="h-full w-full flex justify-center items-center flex-col">
-          <p className="text-center">Seminar</p>
+          <p className="text-center text-xl">Seminar</p>
         </div>
       </div>
     </div>

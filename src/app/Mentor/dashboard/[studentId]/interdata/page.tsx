@@ -37,6 +37,7 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
     { evaluationCriteria: string; marks: string }[]
   >([]);
 
+  const [totalcriteria, setTotalCriteria] = useState(0);
   //dailog box open or close
   const [open, setOpen] = useState(false);
 
@@ -52,6 +53,7 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
         const interMarksUrl = `https://sip-backend-api.onrender.com/api/v1/student/${studentId}/internship/marks`;
         const interMarksRes = await axios.get(interMarksUrl);
         setInterMarks(interMarksRes.data.data);
+        // console.log(interMarksRes.data.data);
 
         // Storing all the initial marks in the state
         const initialUpdatedMarks = interMarksRes.data.data.map(
@@ -67,6 +69,13 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
           (total: any, mark: any) => total + mark.studCriteriaMarks,
           0
         );
+        const totalcriteriamarks = interMarksRes.data.data.reduce(
+          (totalcriteriamarks: any, mark: any) =>
+            totalcriteriamarks + mark.criteriaTotalMarks,
+          0
+        );
+        setTotalCriteria(totalcriteriamarks);
+
         setTotalMarks(total);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -153,7 +162,9 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
                       ))}
                       <div className="flex justify-between p-3 border border-gray-200 rounded-md">
                         <p className="font-semibold">Total Marks</p>
-                        <p>{totalMarks} / 50</p>
+                        <p>
+                          {totalMarks} / {totalcriteria}
+                        </p>
                       </div>
                     </div>
                   </CardContent>

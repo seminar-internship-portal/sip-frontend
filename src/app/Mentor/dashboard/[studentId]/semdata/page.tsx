@@ -33,6 +33,8 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
 
   const [totalMarks, setTotalMarks] = useState<number>(0);
   const [open, setOpen] = useState(false);
+  const [totalcriteria, setTotalCriteria] = useState(0);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -51,6 +53,12 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
           (total: any, mark: any) => total + mark.studCriteriaMarks,
           0
         );
+        const totalcriteriamarks = smarksRes.data.data.reduce(
+          (totalcriteriamarks: any, mark: any) =>
+            totalcriteriamarks + mark.criteriaTotalMarks,
+          0
+        );
+        setTotalCriteria(totalcriteriamarks);
         // Set total seminar marks in state
         setTotalMarks(seminarTotalMarks);
         const initialUpdatedMarks = smarksRes.data.data.map((mark: any) => ({
@@ -140,7 +148,9 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
                       ))}
                       <div className="flex justify-between p-3 border border-gray-200 rounded-md">
                         <p className="font-semibold">Total Marks</p>
-                        <p>{totalMarks} / 50</p>
+                        <p>
+                          {totalMarks} / {totalcriteria}
+                        </p>
                       </div>
                     </div>
                   </CardContent>

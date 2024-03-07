@@ -177,7 +177,7 @@ const Page = () => {
                 setAyear(value);
               }}
             >
-              <DropdownMenuRadioItem value="">All</DropdownMenuRadioItem>
+              {/* <DropdownMenuRadioItem value="">All</DropdownMenuRadioItem> */}
               <DropdownMenuRadioItem value="2022-2023">
                 2022-2023
               </DropdownMenuRadioItem>
@@ -188,21 +188,27 @@ const Page = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+      <div className="grid gap-4 m-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         {data.map((item: any) => (
           <Card key={item.id} className="flex-grow relative">
-            <CardHeader>
-              <CardTitle>{item.name}</CardTitle>
-            </CardHeader>
+            <div className="relative">
+              <div className="absolute top-1 right-0 p-2" aria-label="Delete">
+                <div className="bg-red-500 rounded-full p-1">
+                  <MdDelete
+                    className="w-5 h-5 cursor-pointer text-white"
+                    onClick={() => handleDelete(item.id)}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <CardHeader>
+                <CardTitle>{item.name}</CardTitle>
+              </CardHeader>
+            </div>
             <CardContent>
               <p>{item.criteriaMarks}</p>
             </CardContent>
-            <div className="absolute top-0 right-0 p-2" aria-label="Delete">
-              <MdDelete
-                className="w-5 h-5 cursor-pointer"
-                onClick={() => handleDelete(item.id)}
-              />
-            </div>
           </Card>
         ))}
       </div>
@@ -250,12 +256,7 @@ const Page = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        <Button
-          className="m-4 bg-red-500"
-          onClick={() => router.push("/admin/evaluation/internship/delete")}
-        >
-          Delete Criteria
-        </Button>
+        {/* <Button className="m-4 bg-red-500">Delete Criteria</Button> */}
       </div>
       <div className="m-5">
         <Button onClick={() => router.back()}>Go Back</Button>
