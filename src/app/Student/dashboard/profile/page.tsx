@@ -16,7 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useDispatch, useSelector } from "react-redux";
-import { selectStudent } from "@/app/features/studentname/slice";
+import { selectStudent, setStudent } from "@/app/features/studentname/slice";
+import { getCookie } from "cookies-next";
+import toast from "react-hot-toast";
 
 interface ProfileData {
   name: string;
@@ -28,13 +30,22 @@ interface ProfileData {
 const Profile: React.FC = () => {
   const dispatch = useDispatch();
   const student = useSelector(selectStudent);
+
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
+  const [number, setNumber] = useState("");
+
+  const [newPassword, setNewPassword] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
+
+  const [open, setOpen] = useState(false);
+  const [popen, setPOpen] = useState(false);
 
   useEffect(() => {
     if (student) {
       setName(student.fullName);
       setUsername(student.username);
+      setNumber(student.mobileNo);
     }
   }, [student]);
 
@@ -45,7 +56,16 @@ const Profile: React.FC = () => {
   const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
   };
+  const handleNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNumber(event.target.value);
+  };
 
+  const handleOpassChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOldPassword(event.target.value);
+  };
+  const handleNpassChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPassword(event.target.value);
+  };
   const submitProfileHandler = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -55,27 +75,91 @@ const Profile: React.FC = () => {
       ...student, // Include existing data
       fullName: name,
       username: username,
+      mobileNo: number,
     };
 
-    // Update profile in Redux store
-    dispatch(updateProfile(updatedData));
-
     try {
+      const studentCookie = getCookie("Student");
+      if (!studentCookie) {
+        console.error("Student cookie not found");
+        return;
+      }
+      console.log(studentCookie);
+
+      const { accessToken } = JSON.parse(studentCookie);
+      console.log(accessToken);
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        credentials: "include",
+      };
       // Update profile in the backend API
-      const response = await fetch("/api/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedData),
-      });
+      const response = await fetch(
+        "https://sip-backend-api.onrender.com/api/v1/student/updateAccountDetails",
+        {
+          method: "PUT",
+          headers: headers,
+          body: JSON.stringify(updatedData),
+        }
+      );
       if (response.ok) {
         console.log("Profile updated successfully in the backend");
+        dispatch(setStudent(updatedData));
+        setName("");
+        setUsername("");
+        setNumber("");
+        setOpen(false);
+        toast.success("Profile updated successfully");
       } else {
         console.error("Failed to update profile in the backend");
       }
+    } catch (error: any) {
+      console.error("Error occurred while updating profile:", error.message);
+    }
+  };
+  const submitPassHandler = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const updatepass = {
+      newPassword: newPassword,
+      oldPassword: oldPassword,
+    };
+    try {
+      const studentCookie = getCookie("Student");
+      if (!studentCookie) {
+        console.error("Student cookie not found");
+        return;
+      }
+
+      const { accessToken } = JSON.parse(studentCookie);
+      console.log(accessToken);
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const response = await fetch(
+        "https://sip-backend-api.onrender.com/api/v1/student/changePassword",
+        {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(updatepass),
+        }
+      );
+      if (response.ok) {
+        console.log("Password updated successfully");
+        // Optionally, you can clear the password fields after a successful update
+        setNewPassword("");
+        setOldPassword("");
+
+        toast.success("Password updated successfully");
+        setPOpen(false);
+      } else {
+        console.error("Error updating password:", response.statusText);
+        // Handle error
+      }
     } catch (error) {
-      console.error("Error occurred while updating profile:", error);
+      console.error("Error occurred while updating password:", error);
+      // Handle error
     }
   };
 
@@ -127,7 +211,7 @@ const Profile: React.FC = () => {
         </div>
       </Card>
 
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button className="m-4 p-4 bg-black text-white rounded-md ">
             Edit Profile
@@ -163,6 +247,62 @@ const Profile: React.FC = () => {
                   name="username"
                   value={username}
                   onChange={handleUsernameChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="username" className="text-right">
+                  Number
+                </Label>
+                <Input
+                  id="number"
+                  name="number"
+                  value={number}
+                  onChange={handleNumberChange}
+                  className="col-span-3"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={popen} onOpenChange={setPOpen}>
+        <DialogTrigger asChild>
+          <Button className="m-4 p-4 bg-black text-white rounded-md ">
+            Change Password
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit profile</DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submitPassHandler}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Old Password
+                </Label>
+                <Input
+                  id="opassword"
+                  name="opassword"
+                  value={oldPassword}
+                  onChange={handleOpassChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="username" className="text-right">
+                  New Password
+                </Label>
+                <Input
+                  id="username"
+                  name="username"
+                  value={newPassword}
+                  onChange={handleNpassChange}
                   className="col-span-3"
                 />
               </div>

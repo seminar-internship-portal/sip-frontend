@@ -19,4 +19,8 @@ const studentSlice = createSlice({
 export const { setStudent, clearStudent } = studentSlice.actions;
 export const selectStudent = (state) => state.student.student;
 
+export const updateProfile = (profileData) => (dispatch) => {
+  // Update Redux store with the new mentor data
+  dispatch(setMentor(profileData));
+};
 export default studentSlice.reducer;

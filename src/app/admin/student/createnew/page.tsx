@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 const Page = () => {
   const [formData, setFormData] = useState({
@@ -55,6 +56,17 @@ const Page = () => {
       );
       if (response.ok) {
         console.log("Profile added successfully");
+        toast.success("Profile added successfully");
+        setFormData({
+          fullName: "",
+          username: "",
+          email: "",
+          academicYear: "",
+          registrationId: "",
+          mobileNo: "",
+          prnNo: "",
+          rollNo: "",
+        });
       } else {
         console.error("Error Adding  profile:", response.statusText);
         // Handle error

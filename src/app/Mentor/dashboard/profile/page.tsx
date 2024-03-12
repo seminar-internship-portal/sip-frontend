@@ -23,6 +23,8 @@ import {
   updateProfile,
 } from "../../../features/username/Slice";
 import { getCookie } from "cookies-next";
+import toast from "react-hot-toast";
+import { useSearchParams } from "next/navigation";
 
 interface ProfileData {
   name: string;
@@ -39,6 +41,8 @@ const Profile: React.FC = () => {
   const [number, setNumber] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [oldPassword, setOldPassword] = useState("");
+  const [open, setOpen] = useState(false);
+  const [popen, setPOpen] = useState(false);
 
   useEffect(() => {
     if (mentor) {
@@ -110,6 +114,11 @@ const Profile: React.FC = () => {
         console.log("Profile updated successfully");
         // Dispatch action to update profile in Redux store
         dispatch(setMentor(updatedData)); // Dispatch here
+        toast.success("Profile updated successfully");
+        setName("");
+        setUsername("");
+        setNumber("");
+        setOpen(false);
       } else {
         console.error("Error updating profile:", response.statusText);
         // Handle error
@@ -153,6 +162,8 @@ const Profile: React.FC = () => {
         // Optionally, you can clear the password fields after a successful update
         setNewPassword("");
         setOldPassword("");
+        toast.success("Password updated successfully");
+        setPOpen(false);
       } else {
         console.error("Error updating password:", response.statusText);
         // Handle error
@@ -210,7 +221,7 @@ const Profile: React.FC = () => {
         </div>
       </Card>
 
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button className="m-4 p-4 bg-black text-white rounded-md ">
             Edit Profile
@@ -266,7 +277,7 @@ const Profile: React.FC = () => {
           </form>
         </DialogContent>
       </Dialog>
-      <Dialog>
+      <Dialog open={popen} onOpenChange={setPOpen}>
         <DialogTrigger asChild>
           <Button className="m-4 p-4 bg-black text-white rounded-md ">
             Change Password

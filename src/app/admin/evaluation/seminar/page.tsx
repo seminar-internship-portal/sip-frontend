@@ -120,7 +120,7 @@ const Page = () => {
       // Handle any network or other errors that may occur during deletion
     }
   };
-  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = async (event: any) => {
     event.preventDefault();
     // Define functionality to save criteria
     console.log(criterias);

@@ -120,7 +120,7 @@ const Page = () => {
     }
   };
 
-  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = async (event: any) => {
     event.preventDefault();
     // Define functionality to save criteria
     console.log(criterias);
@@ -162,8 +162,8 @@ const Page = () => {
   };
   const router = useRouter();
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-8">
+    <div className="container mx-auto p-4 ">
+      <div className="flex justify-between items-center mb-8 m-5">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">{ayear || "YEAR"}</Button>
