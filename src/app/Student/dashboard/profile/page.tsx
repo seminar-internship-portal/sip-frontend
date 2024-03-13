@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectStudent, setStudent } from "@/app/features/studentname/slice";
 import { getCookie } from "cookies-next";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 interface ProfileData {
   name: string;
@@ -40,6 +41,10 @@ const Profile: React.FC = () => {
 
   const [open, setOpen] = useState(false);
   const [popen, setPOpen] = useState(false);
+
+  const [selectedFile, setSelectedFile] = useState<any>(null);
+
+  const [profileopen, setProfileOpen] = useState(false);
 
   useEffect(() => {
     if (student) {
@@ -66,6 +71,62 @@ const Profile: React.FC = () => {
   const handleNpassChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewPassword(event.target.value);
   };
+
+  const handleFileChange = (event: any) => {
+    const file = event.target.files[0];
+    console.log(file);
+    setSelectedFile(file);
+  };
+
+  const handleSubmitPhoto = (event: any) => {
+    event.preventDefault();
+    const studentCookie = getCookie("Student");
+    if (!studentCookie) {
+      console.error("Student cookie not found");
+      return;
+    }
+
+    const { student, accessToken } = JSON.parse(studentCookie);
+    if (!student || !student._id) {
+      console.error("Student ID not found in cookie");
+      return;
+    }
+    const url =
+      "https://sip-backend-api.onrender.com/api/v1/student/changeAvatar";
+    const formData = new FormData();
+    formData.append("avatar", selectedFile);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "content-type": "multipart/form-data",
+      },
+    };
+    axios
+      .post(url, formData, config)
+      .then((response) => {
+        toast.success(response.data.message); // Access the message from the response object
+        setProfileOpen(false);
+        setSelectedFile(null);
+        dispatch(setStudent(response.data.data));
+        console.log(response.data);
+      })
+      .catch((error) => {
+        if (error.response) {
+          // Server responded with a status code outside of 2xx range
+          toast.error(error.response.data.message || "An error occurred"); // Display error message from the server response
+          console.log(error.response.data);
+        } else if (error.request) {
+          // The request was made but no response was received
+          toast.error("No response received from the server");
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          toast.error("An unexpected error occurred");
+          console.log("Error", error.message);
+        }
+      });
+  };
+
   const submitProfileHandler = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -102,6 +163,7 @@ const Profile: React.FC = () => {
           body: JSON.stringify(updatedData),
         }
       );
+
       if (response.ok) {
         console.log("Profile updated successfully in the backend");
         dispatch(setStudent(updatedData));
@@ -162,18 +224,17 @@ const Profile: React.FC = () => {
       // Handle error
     }
   };
-
   return (
     <div className="m-12">
       <Card className="bg-white rounded-md shadow-md hover:shadow-2xl transition duration-300 ease-in-out">
         <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 items-center">
           <div className="flex justify-center mb-4 sm:mb-0">
-            <CardHeader className="w-32 h-32 rounded-full overflow-hidden">
+            <CardHeader className=" w-48 h-48 rounded-full overflow-hidden">
               <Image
-                src="/noavatar.png"
+                src={student?.avatar}
                 alt="No Avatar"
-                width={128}
-                height={128}
+                width={500}
+                height={500}
                 layout="responsive"
               />
             </CardHeader>
@@ -308,6 +369,38 @@ const Profile: React.FC = () => {
               </div>
             </div>
             <DialogFooter>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={profileopen} onOpenChange={setProfileOpen}>
+        <DialogTrigger>
+          <Button className="m-4 p-4 bg-black text-white rounded-md ">
+            Change Avatar
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add your Profile Photo</DialogTitle>
+            <DialogDescription>
+              {/* This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers. */}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmitPhoto}>
+            <input type="file" onChange={handleFileChange} accept="image/*" />
+            {selectedFile && (
+              <div className="flex flex-col items-center">
+                <p className="p-2 m-2">Selected File: {selectedFile.name}</p>
+                <img
+                  src={URL.createObjectURL(selectedFile)}
+                  alt="Selected"
+                  style={{ maxWidth: "50%" }}
+                />
+              </div>
+            )}
+            <DialogFooter className="p-5">
               <Button type="submit">Save changes</Button>
             </DialogFooter>
           </form>

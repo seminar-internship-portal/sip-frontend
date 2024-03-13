@@ -75,7 +75,7 @@ const sidebar = () => {
           <div className="p-3">
             <Image
               className="object-cover rounded-full"
-              src="/noavatar.png"
+              src={student.avatar}
               alt="/public/noavatar.png"
               width={50}
               height={50}
