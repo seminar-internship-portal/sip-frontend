@@ -3,16 +3,17 @@
 import { useEffect, useState } from "react";
 import { Student, columns } from "./columns";
 import { DataTable } from "./data-table";
-
+import { useSelector } from "react-redux";
+import { selectMentor } from "@/app/features/username/Slice";
 export default function StudentTable() {
   const [data, setData] = useState<Student[]>([]);
   const [ayear, setAyear] = useState("");
-
+  const mentor = useSelector(selectMentor);
   useEffect(() => {
     async function fetchData() {
       console.log(ayear);
       const response = await fetch(
-        `https://sip-backend-api.onrender.com/api/v1/student?year=${ayear}`
+        `https://sip-backend-api.onrender.com/api/v1/mentor/studentAssigned/${mentor._id}`
       ); // Assuming the API route is defined in pages/api/v1/student.ts
       const resData = await response.json();
 

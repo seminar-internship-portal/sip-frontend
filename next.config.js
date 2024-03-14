@@ -7,7 +7,7 @@ const nextConfig = {
     API_BASE_URL: "https://sip-backend-api.onrender.com/api/v1", // Update with correct API base URL
   },
   images: {
-    domains: ["res.cloudinary.com"],
+    domains: ["res.cloudinary.com", "example.com"],
   },
 };
 
