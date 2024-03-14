@@ -76,6 +76,7 @@ export const columns: ColumnDef<Student>[] = [
 
   {
     header: "Profile",
+
     cell: ({ row }) => {
       const mentorid = row.original.id;
 

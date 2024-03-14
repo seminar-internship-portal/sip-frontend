@@ -30,11 +30,11 @@ export default function StudentTable() {
           rollNo: item.rollNo,
           prnNo: item.prnNo,
           registrationId: item.registrationId,
-          id: item.id,
+          id: item._id,
         }))
       );
+      console.log(resData);
     }
-
     fetchData();
   }, [ayear]); // Fetch data whenever ayear changes
 
