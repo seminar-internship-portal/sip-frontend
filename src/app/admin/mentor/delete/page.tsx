@@ -17,12 +17,31 @@ import {
 } from "@/components/ui/alert-dialog";
 import toast from "react-hot-toast";
 import { getCookie } from "cookies-next";
+import { headers } from "next/headers";
 
 // Function to fetch student data
 const fetchMentor = async () => {
   try {
+    const adminCookie = getCookie("Admin");
+    if (!adminCookie) {
+      console.log("Admin cookie not found ");
+      return;
+    }
+
+    const { accessToken } = JSON.parse(adminCookie);
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      credentials: "include",
+    };
+
     const response = await fetch(
-      "https://sip-backend-api.onrender.com/api/v1/mentor"
+      "https://sip-backend-api.onrender.com/api/v1/mentor",
+      {
+        method: "GET",
+        headers: headers,
+      }
     );
     if (!response.ok) {
       throw new Error("Network response was not ok");
@@ -72,11 +91,10 @@ const Page = () => {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await fetch(
-        "https://sip-backend-api.onrender.com/api/v1/admin/removementor",
+        `https://sip-backend-api.onrender.com/api/v1/admin/deleteMentor/${matchMentorData?.id}`,
         {
-          method: "POST",
+          method: "DELETE",
           headers: headers,
-          body: JSON.stringify({ studentId: matchMentorData?.id }), // Corrected variable name
         }
       );
       if (!response.ok) {
@@ -84,6 +102,10 @@ const Page = () => {
       }
       const data = await response.json();
       console.log(data);
+      const updatedMentorData = await fetchMentor();
+      if (updatedMentorData) {
+        setMentorData(updatedMentorData.data);
+      }
       toast.success("Mentor deleted successfully");
     } catch (error) {
       console.error("There was a problem with the request:", error);

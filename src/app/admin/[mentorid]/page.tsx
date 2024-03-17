@@ -31,10 +31,24 @@ const page = ({ params }: { params: { mentorid: string } }) => {
 
   const fetchData = async () => {
     try {
+      const adminCookies = getCookie("Admin");
+      if (!adminCookies) {
+        console.error("Admin cookie not found");
+        return;
+      }
+      console.log(adminCookies);
+
+      const { accessToken } = JSON.parse(adminCookies);
+
       const mentorId = params.mentorid;
       const baseUrl = process.env.API_BASE_URL;
       const url = `${baseUrl}/mentor/${mentorId}`;
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
       setMentor(response.data.data);
       console.log(response.data.data);
     } catch (error) {
@@ -43,10 +57,24 @@ const page = ({ params }: { params: { mentorid: string } }) => {
   };
   const fetchassstud = async () => {
     try {
+      const adminCookies = getCookie("Admin");
+      if (!adminCookies) {
+        console.error("Admin cookie not found");
+        return;
+      }
+      console.log(adminCookies);
+
+      const { accessToken } = JSON.parse(adminCookies);
+
       const mentorId = params.mentorid;
       const baseUrl = process.env.API_BASE_URL;
       const assignedStud = `${baseUrl}/mentor/studentAssigned/${mentorId}`;
-      const assignedStudRes = await axios.get(assignedStud);
+      const assignedStudRes = await axios.get(assignedStud, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
       setAssignedStudents(assignedStudRes.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -63,8 +91,25 @@ const page = ({ params }: { params: { mentorid: string } }) => {
 
   const fetchStudent = async () => {
     try {
+      const adminCookies = getCookie("Admin");
+      if (!adminCookies) {
+        console.error("Admin cookie not found");
+        return;
+      }
+      console.log(adminCookies);
+
+      const { accessToken } = JSON.parse(adminCookies);
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      };
       const response = await fetch(
-        "https://sip-backend-api.onrender.com/api/v1/student"
+        "https://sip-backend-api.onrender.com/api/v1/student",
+        {
+          headers: headers,
+          method: "GET",
+        }
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

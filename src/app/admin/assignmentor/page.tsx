@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Student, columns } from "./columns";
 import { DataTable } from "./data-table";
+import { getCookie } from "cookies-next";
+import { headers } from "next/headers";
 
 export default function StudentTable() {
   const [data, setData] = useState<Student[]>([]);
@@ -11,8 +13,26 @@ export default function StudentTable() {
   useEffect(() => {
     async function fetchData() {
       console.log(ayear);
+      const adminCookies = getCookie("Admin");
+      if (!adminCookies) {
+        console.error("Admin cookie not found");
+        return;
+      }
+      console.log(adminCookies);
+
+      const { accessToken } = JSON.parse(adminCookies);
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      };
+
       const response = await fetch(
-        `https://sip-backend-api.onrender.com/api/v1/mentor?year=${ayear}`
+        `https://sip-backend-api.onrender.com/api/v1/mentor?year=${ayear}`,
+        {
+          method: "GET",
+          headers: headers,
+        }
       ); // Assuming the API route is defined in pages/api/v1/student.ts
       const resData = await response.json();
 

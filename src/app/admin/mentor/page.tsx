@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-const YourComponent = () => {
+const Page = () => {
   const navigation = useRouter();
 
   const handleAddMentorClick = (e: any, type: string) => {
@@ -33,4 +33,4 @@ const YourComponent = () => {
   );
 };
 
-export default YourComponent;
+export default Page;

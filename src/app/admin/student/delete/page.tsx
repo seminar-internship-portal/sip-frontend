@@ -21,8 +21,26 @@ import { getCookie } from "cookies-next";
 // Function to fetch student data
 const fetchStudent = async () => {
   try {
+    const adminCookie = getCookie("Admin");
+    if (!adminCookie) {
+      console.log("Admin cookie not found ");
+      return;
+    }
+
+    const { accessToken } = JSON.parse(adminCookie);
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      credentials: "include",
+    };
+
     const response = await fetch(
-      "https://sip-backend-api.onrender.com/api/v1/student"
+      "https://sip-backend-api.onrender.com/api/v1/student",
+      {
+        method: "GET",
+        headers: headers,
+      }
     );
     if (!response.ok) {
       throw new Error("Network response was not ok");
@@ -72,15 +90,18 @@ const Page = () => {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await fetch(
-        "https://sip-backend-api.onrender.com/api/v1/admin/removeStudent",
+        `https://sip-backend-api.onrender.com/api/v1/admin/deleteStudent/${matchStudentData?.id}`,
         {
-          method: "POST",
+          method: "DELETE",
           headers: headers,
-          body: JSON.stringify({ studentId: matchStudentData?.id }), // Corrected variable name
         }
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
+      }
+      const updatatedStudentData = await fetchStudent();
+      if (updatatedStudentData) {
+        setStudentData(updatatedStudentData.data);
       }
       const data = await response.json();
       console.log(data);
@@ -103,6 +124,25 @@ const Page = () => {
         setMatchStudentData(null);
         toast.error("no data found ");
       }
+    }
+  };
+
+  const handleCheckboxChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: string
+  ) => {
+    const checked = e.target.checked;
+    if (checked) {
+      const selectedMentor = studentData.find(
+        (student: any) => student.registrationId === id
+      );
+      if (selectedMentor) {
+        setMatchStudentData(selectedMentor);
+        setRollNo(selectedMentor.rollNo);
+      }
+    } else {
+      setMatchStudentData(null);
+      setRollNo("");
     }
   };
 
@@ -249,6 +289,7 @@ const Page = () => {
               <table className="w-full border-collapse border border-gray-400 rounded">
                 <thead>
                   <tr>
+                    <th className="border border-gray-400 px-1 py-2"></th>
                     <th className="border border-gray-400 px-4 py-2">Name</th>
                     <th className="border border-gray-400 px-4 py-2">
                       mobileNo
@@ -260,6 +301,14 @@ const Page = () => {
                 <tbody>
                   {filteredData.map((item: any) => (
                     <tr key={item.id}>
+                      <td className="border border-gray-400 px-4 py-2">
+                        <input
+                          type="checkbox"
+                          onChange={(e) =>
+                            handleCheckboxChange(e, item.registrationId)
+                          }
+                        />
+                      </td>
                       <td className="border border-gray-400 px-4 py-2">
                         {item.fullName}
                       </td>

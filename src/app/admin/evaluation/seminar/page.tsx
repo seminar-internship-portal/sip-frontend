@@ -53,8 +53,25 @@ const Page = () => {
   const [open, setOpen] = useState(false);
 
   const fetchData = async () => {
+    const adminCookies = getCookie("Admin");
+    if (!adminCookies) {
+      console.error("Admin cookie not found");
+      return;
+    }
+    console.log(adminCookies);
+
+    const { accessToken } = JSON.parse(adminCookies);
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    };
     const response = await fetch(
-      `https://sip-backend-api.onrender.com/api/v1/admin/evaluation/seminarCriteria?academicYear=${ayear}`
+      `https://sip-backend-api.onrender.com/api/v1/admin/evaluation/seminarCriteria?academicYear=${ayear}`,
+      {
+        headers: headers,
+        method: "GET",
+      }
     );
     const resData = await response.json();
 
@@ -90,12 +107,26 @@ const Page = () => {
     console.log(itemId); // Log the item ID to verify it's correct
 
     try {
+      const adminCookies = getCookie("Admin");
+      if (!adminCookies) {
+        console.error("Admin cookie not found");
+        return;
+      }
+      console.log(adminCookies);
+
+      const { accessToken } = JSON.parse(adminCookies);
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      };
       const deleteres = await fetch(
         `https://sip-backend-api.onrender.com/api/v1/admin/evaluation/seminarCriteria/${itemId}`,
         {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
+            authorization: `Bearer ${accessToken}`,
           },
         }
       );
