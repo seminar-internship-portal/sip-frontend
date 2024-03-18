@@ -158,7 +158,7 @@ const Profile: React.FC = () => {
       const response = await fetch(
         "https://sip-backend-api.onrender.com/api/v1/student/updateAccountDetails",
         {
-          method: "PUT",
+          method: "POST",
           headers: headers,
           body: JSON.stringify(updatedData),
         }
