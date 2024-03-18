@@ -68,7 +68,7 @@ const page = ({ params }: { params: { mentorid: string } }) => {
 
       const mentorId = params.mentorid;
       const baseUrl = process.env.API_BASE_URL;
-      const assignedStud = `${baseUrl}/mentor/studentAssigned/${mentorId}`;
+      const assignedStud = `${baseUrl}/mentor/studentAssigned/${mentorId}?academicYear=2023-2024`;
       const assignedStudRes = await axios.get(assignedStud, {
         headers: {
           "Content-Type": "application/json",
@@ -126,7 +126,7 @@ const page = ({ params }: { params: { mentorid: string } }) => {
   const filteredData = studentData
     ? studentData.filter((item: any) => {
         return Object.values(item).some((value: any) =>
-          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+          value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
         );
       })
     : [];
@@ -333,7 +333,7 @@ const page = ({ params }: { params: { mentorid: string } }) => {
                     {item.rollNo}
                   </td>
                   <td className="border border-gray-400 px-4 py-2 flex justify-center items-center">
-                    <Button onClick={(event) => handleDelete(event, item._id)}>
+                    <Button onClick={(event) => handleDelete(event, item.id)}>
                       <MdDelete />
                     </Button>
                   </td>
