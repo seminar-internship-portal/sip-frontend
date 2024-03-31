@@ -111,14 +111,17 @@ export default function Log() {
     <div className="flex w-screen min-h-screen">
       <div className="hidden bg-slate-950 lg:w-1/3 lg:min-h-screen lg:flex justify-center items-center">
         <Image
-          src="/pic.jpg"
-          width={250}
-          height={250}
+          src="/pict.png"
+          width={350}
+          height={350}
           alt="Picture of the author"
         />
       </div>
 
       <div className="flex flex-col items-center justify-center w-full p-4 lg:w-2/3">
+        <p className="p-4 text-5xl font-bold translate-y-24 ">
+          Seminar Internship Portal
+        </p>
         <Card className="w-full my-auto lg:w-2/3">
           <CardHeader className="space-y-1">
             <CardTitle className="my-2 text-2xl">

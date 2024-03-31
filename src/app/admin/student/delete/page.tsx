@@ -17,7 +17,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import toast from "react-hot-toast";
 import { getCookie } from "cookies-next";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 // Function to fetch student data
 
 const Page = () => {
@@ -26,6 +34,7 @@ const Page = () => {
   const [matchStudentData, setMatchStudentData] = useState<any>(null); // Corrected variable name
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [ayear, setAyear] = useState("");
 
   const fetchStudent = async () => {
     try {
@@ -45,12 +54,13 @@ const Page = () => {
       };
 
       const response = await fetch(
-        "https://sip-backend-api.onrender.com/api/v1/student?year=",
+        `https://sip-backend-api.onrender.com/api/v1/student?year=${ayear}`,
         {
           method: "GET",
           headers: headers,
         }
       );
+      console.log(ayear);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -60,8 +70,8 @@ const Page = () => {
       return data;
     } catch (error) {
       console.error("There was a problem with your fetch operation:", error);
-      return null;
       setLoading(false);
+      return null;
     }
   };
   // Fetch student data when the component mounts
@@ -75,7 +85,19 @@ const Page = () => {
 
     fetchData();
   }, []);
-
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      setStudentData(null);
+      setMatchStudentData(null);
+      const studentData = await fetchStudent();
+      if (studentData) {
+        setStudentData(studentData.data);
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [ayear]);
   // Function to delete student
   const deleteStudent = async () => {
     try {
@@ -156,16 +178,120 @@ const Page = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredData = studentData
-    ? studentData.filter((item: any) => {
-        return Object.values(item).some((value: any) =>
-          value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      })
+    ? studentData
+        .filter((item: any) => {
+          return Object.values(item).some((value: any) =>
+            value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        })
+        .slice(0, 10)
     : [];
 
   return (
     <div>
       {/* Card for deleting student */}
+
+      <div className="flex px-72">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">{ayear || "YEAR"}</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>ACEDEMIC YEAR</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuRadioGroup
+              value={ayear}
+              onValueChange={(value) => {
+                setAyear(value);
+              }}
+            >
+              <DropdownMenuRadioItem value="">All</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="2022-2023">
+                2022-2023
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="2023-2024">
+                2023-2024
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div className="flex justify-center items-center">
+        <Card className="flex-grow relative w-full max-w-2xl mx-2 my-3 p-5">
+          <div className="flex justify-between items-center">
+            <CardHeader>
+              {loading ? (
+                <CardTitle>Fetching data plz wait </CardTitle>
+              ) : (
+                <CardTitle>Search student</CardTitle>
+              )}
+            </CardHeader>
+          </div>
+          <div className="p-2 ">
+            {loading ? (
+              <input
+                placeholder="Fetching Student "
+                className="border border-gray-400 rounded px-4 py-2 mb-4"
+                disabled
+              />
+            ) : (
+              <input
+                type="text"
+                placeholder="Search by name..."
+                className="border border-gray-400 rounded px-4 py-2 mb-4"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            )}
+
+            {searchTerm && filteredData.length === 0 && (
+              <p className="text-red-500">No matching data found</p>
+            )}
+            {searchTerm && filteredData.length > 0 && (
+              <table className="w-full border-collapse border border-gray-400 rounded">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-400 px-1 py-2"></th>
+                    <th className="border border-gray-400 px-4 py-2">Name</th>
+                    <th className="border border-gray-400 px-4 py-2">
+                      mobileNo
+                    </th>
+                    <th className="border border-gray-400 px-4 py-2">rollNo</th>
+                    <th className="border border-gray-400 px-4 py-2">Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredData.map((item: any) => (
+                    <tr key={item.id}>
+                      <td className="border border-gray-400 px-4 py-2">
+                        <input
+                          type="checkbox"
+                          onChange={(e) =>
+                            handleCheckboxChange(e, item.registrationId)
+                          }
+                        />
+                      </td>
+                      <td className="border border-gray-400 px-4 py-2">
+                        {item.fullName}
+                      </td>
+                      <td className="border border-gray-400 px-4 py-2">
+                        {item.mobileNo} {/* Corrected property name */}
+                      </td>
+                      <td className="border border-gray-400 px-4 py-2">
+                        {item.rollNo}
+                      </td>
+                      <td className="border border-gray-400 px-4 py-2">
+                        {item.email}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </Card>
+      </div>
       <div className="flex justify-center items-center ">
         <Card
           key="hi"
@@ -257,8 +383,6 @@ const Page = () => {
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction onClick={deleteStudent}>
-                        {" "}
-                        {/* Corrected function name */}
                         Continue
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -267,78 +391,6 @@ const Page = () => {
               </AlertDialog>
             </div>
           </CardContent>
-        </Card>
-      </div>
-
-      <div className="flex justify-center items-center">
-        <Card className="flex-grow relative w-full max-w-2xl mx-2 my-3 p-5">
-          <div className="flex justify-between items-center">
-            <CardHeader>
-              <CardTitle>Search student</CardTitle>
-            </CardHeader>
-          </div>
-          <div className="p-2 ">
-            {loading ? (
-              <input
-                placeholder="Fetching Student "
-                className="border border-gray-400 rounded px-4 py-2 mb-4"
-                disabled
-              />
-            ) : (
-              <input
-                type="text"
-                placeholder="Search by name..."
-                className="border border-gray-400 rounded px-4 py-2 mb-4"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            )}
-
-            {searchTerm && filteredData.length === 0 && (
-              <p className="text-red-500">No matching data found</p>
-            )}
-            {searchTerm && filteredData.length > 0 && (
-              <table className="w-full border-collapse border border-gray-400 rounded">
-                <thead>
-                  <tr>
-                    <th className="border border-gray-400 px-1 py-2"></th>
-                    <th className="border border-gray-400 px-4 py-2">Name</th>
-                    <th className="border border-gray-400 px-4 py-2">
-                      mobileNo
-                    </th>
-                    <th className="border border-gray-400 px-4 py-2">rollNo</th>
-                    <th className="border border-gray-400 px-4 py-2">Email</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredData.map((item: any) => (
-                    <tr key={item.id}>
-                      <td className="border border-gray-400 px-4 py-2">
-                        <input
-                          type="checkbox"
-                          onChange={(e) =>
-                            handleCheckboxChange(e, item.registrationId)
-                          }
-                        />
-                      </td>
-                      <td className="border border-gray-400 px-4 py-2">
-                        {item.fullName}
-                      </td>
-                      <td className="border border-gray-400 px-4 py-2">
-                        {item.mobileNo} {/* Corrected property name */}
-                      </td>
-                      <td className="border border-gray-400 px-4 py-2">
-                        {item.rollNo}
-                      </td>
-                      <td className="border border-gray-400 px-4 py-2">
-                        {item.email}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
         </Card>
       </div>
       <Button onClick={() => router.back()}>GO BACK</Button>

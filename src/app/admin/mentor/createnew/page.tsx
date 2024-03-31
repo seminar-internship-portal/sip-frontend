@@ -63,10 +63,12 @@ const Page = () => {
         });
       } else {
         console.error("Error Adding  profile:", response.statusText);
+        toast.error("Error Adding  profile");
         // Handle error
       }
     } catch (error) {
       console.error("Error occurred while creating  profile:", error);
+      toast.error("Error occurred while creating  profile");
     }
   };
   const router = useRouter();

@@ -360,7 +360,10 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
                                           ) : (
                                             <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
                                               <p className="p-2 m-2">
-                                                Upload the offer letter
+                                                Offer Letter
+                                              </p>
+                                              <p className="p-2 m-2">
+                                                PDF not Uploaded
                                               </p>
                                             </div>
                                           )}
@@ -391,7 +394,10 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
                                           ) : (
                                             <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
                                               <p className="p-2 m-2">
-                                                Upload the PDF file
+                                                Permission Letter
+                                              </p>
+                                              <p className="p-2 m-2">
+                                                PDF not uploaded
                                               </p>
                                             </div>
                                           )}
@@ -421,8 +427,11 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
                                             </div>
                                           ) : (
                                             <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                                              <p className="p-2 m-2 ">
+                                                Completion Letter
+                                              </p>
                                               <p className="p-2 m-2">
-                                                Upload the PDF file
+                                                PDF not Uploaded
                                               </p>
                                             </div>
                                           )}

@@ -20,48 +20,54 @@ import { getCookie } from "cookies-next";
 import { headers } from "next/headers";
 
 // Function to fetch student data
-const fetchMentor = async () => {
-  try {
-    const adminCookie = getCookie("Admin");
-    if (!adminCookie) {
-      console.log("Admin cookie not found ");
-      return;
-    }
-
-    const { accessToken } = JSON.parse(adminCookie);
-
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-      credentials: "include",
-    };
-
-    const response = await fetch(
-      "https://sip-backend-api.onrender.com/api/v1/mentor",
-      {
-        method: "GET",
-        headers: headers,
-      }
-    );
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error("There was a problem with your fetch operation:", error);
-    return null;
-  }
-};
 
 const Page = () => {
   const [registrationId, setRegistrationId] = useState("");
   const [mentorData, setMentorData] = useState<any>(null);
   const [matchMentorData, setMatchMentorData] = useState<any>(null); // Corrected variable name
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+  const fetchMentor = async () => {
+    try {
+      setLoading(true);
+      const adminCookie = getCookie("Admin");
+      if (!adminCookie) {
+        console.log("Admin cookie not found ");
+        return;
+      }
 
+      const { accessToken } = JSON.parse(adminCookie);
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        credentials: "include",
+      };
+
+      const response = await fetch(
+        "https://sip-backend-api.onrender.com/api/v1/mentor",
+        {
+          method: "GET",
+          headers: headers,
+        }
+      );
+      if (!response.ok) {
+        setLoading(false);
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log(data);
+      setLoading(false);
+
+      return data;
+    } catch (error) {
+      console.error("There was a problem with your fetch operation:", error);
+      setLoading(false);
+
+      return null;
+    }
+  };
   // Fetch student data when the component mounts
   useEffect(() => {
     async function fetchData() {
@@ -164,6 +170,86 @@ const Page = () => {
   return (
     <div>
       {/* Card for deleting mentor */}
+
+      <div className="flex justify-center items-center">
+        <Card className="flex-grow relative w-full max-w-4xl mx-3 my-3 p-5">
+          {" "}
+          {/* Increased max width to max-w-4xl */}
+          <div className="flex justify-between items-center">
+            <CardHeader>
+              {loading ? (
+                <CardTitle>Fetching data plz wait </CardTitle>
+              ) : (
+                <CardTitle>Search Mentor</CardTitle>
+              )}
+            </CardHeader>
+          </div>
+          <div className="p-2 ">
+            {loading ? (
+              <input
+                placeholder="Fetching Mentor  "
+                className="border border-gray-400 rounded px-4 py-2 mb-4"
+                disabled
+              />
+            ) : (
+              <input
+                type="text"
+                placeholder="Search by name..."
+                className="border border-gray-400 rounded px-4 py-2 mb-4"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            )}
+
+            {searchTerm && filteredData.length === 0 && (
+              <p className="text-red-500">No matching data found</p>
+            )}
+            {searchTerm && filteredData.length > 0 && (
+              <table className="w-full border-collapse border border-gray-400 rounded">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-400 px-1 py-2"></th>
+                    <th className="border border-gray-400 px-4 py-2">Name</th>
+                    <th className="border border-gray-400 px-4 py-2">
+                      Mobile No
+                    </th>
+                    <th className="border border-gray-400 px-4 py-2">
+                      Registration ID
+                    </th>
+                    <th className="border border-gray-400 px-4 py-2">Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredData.map((item: any) => (
+                    <tr key={item.id}>
+                      <td className="border border-gray-400 px-4 py-2">
+                        <input
+                          type="checkbox"
+                          onChange={(e) =>
+                            handleCheckboxChange(e, item.registrationId)
+                          }
+                        />
+                      </td>
+                      <td className="border border-gray-400 px-4 py-2">
+                        {item.fullName}
+                      </td>
+                      <td className="border border-gray-400 px-4 py-2">
+                        {item.mobileNo}
+                      </td>
+                      <td className="border border-gray-400 px-4 py-2">
+                        {item.registrationId}
+                      </td>
+                      <td className="border border-gray-400 px-4 py-2">
+                        {item.email}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </Card>
+      </div>
       <div className="flex justify-center items-center ">
         <Card
           key="hi"
@@ -262,76 +348,6 @@ const Page = () => {
           </CardContent>
         </Card>
       </div>
-
-      <div className="flex justify-center items-center">
-        <Card className="flex-grow relative w-full max-w-4xl mx-3 my-3 p-5">
-          {" "}
-          {/* Increased max width to max-w-4xl */}
-          <div className="flex justify-between items-center">
-            <CardHeader>
-              <CardTitle className="text-2xl">
-                Search Student To Delete
-              </CardTitle>
-            </CardHeader>
-          </div>
-          <div className="p-2">
-            <input
-              type="text"
-              placeholder="Search by name..."
-              className="border border-gray-400 rounded px-4 py-2 mb-4"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            {searchTerm && filteredData.length === 0 && (
-              <p className="text-red-500">No matching data found</p>
-            )}
-            {searchTerm && filteredData.length > 0 && (
-              <table className="w-full border-collapse border border-gray-400 rounded">
-                <thead>
-                  <tr>
-                    <th className="border border-gray-400 px-1 py-2"></th>
-                    <th className="border border-gray-400 px-4 py-2">Name</th>
-                    <th className="border border-gray-400 px-4 py-2">
-                      Mobile No
-                    </th>
-                    <th className="border border-gray-400 px-4 py-2">
-                      Registration ID
-                    </th>
-                    <th className="border border-gray-400 px-4 py-2">Email</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredData.map((item: any) => (
-                    <tr key={item.id}>
-                      <td className="border border-gray-400 px-4 py-2">
-                        <input
-                          type="checkbox"
-                          onChange={(e) =>
-                            handleCheckboxChange(e, item.registrationId)
-                          }
-                        />
-                      </td>
-                      <td className="border border-gray-400 px-4 py-2">
-                        {item.fullName}
-                      </td>
-                      <td className="border border-gray-400 px-4 py-2">
-                        {item.mobileNo}
-                      </td>
-                      <td className="border border-gray-400 px-4 py-2">
-                        {item.registrationId}
-                      </td>
-                      <td className="border border-gray-400 px-4 py-2">
-                        {item.email}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </Card>
-      </div>
-
       <Button onClick={() => router.back()}>GO BACK</Button>
     </div>
   );

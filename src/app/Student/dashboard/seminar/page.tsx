@@ -256,9 +256,6 @@ const Seminar = () => {
     }
   };
 
-  const test = () => {
-    console.log(seminarData);
-  };
   const openPdfInNewTab = (file: File) => {
     const pdfUrl = URL.createObjectURL(file);
     window.open(pdfUrl, "_blank");
@@ -274,13 +271,13 @@ const Seminar = () => {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add Internship Details</DialogTitle>
+                <DialogTitle>Add Seminar Details</DialogTitle>
               </DialogHeader>
               <form onSubmit={submitSeminarHandler}>
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="title" className="text-right">
-                      Internship Name
+                      Seminar Name
                     </Label>
                     <Input
                       id="title"
@@ -340,7 +337,7 @@ const Seminar = () => {
                             >
                               Open PDF in New Tab
                             </button>
-                            <button
+                            {/* <button
                               // onClick={handleDeleteAbstract}
                               className="px-3 py-2 m-3 text-white bg-red-500 rounded-full hover:bg-red-700 focus:outline-none cursor-pointer"
                             >
@@ -358,7 +355,7 @@ const Seminar = () => {
                                   d="M6 18L18 6M6 6l12 12"
                                 />
                               </svg>
-                            </button>
+                            </button> */}
                           </div>
                         </div>
                       ) : (
@@ -551,7 +548,6 @@ const Seminar = () => {
           </Card>
         </div>
       )}
-      <Button onClick={test}>Test</Button>
     </div>
   );
 };

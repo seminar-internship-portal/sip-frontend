@@ -345,7 +345,7 @@ const internship = () => {
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="duration" className="text-right">
-                    Duration
+                    Duration (in weeks)
                   </Label>
                   <Input
                     id="duration"
