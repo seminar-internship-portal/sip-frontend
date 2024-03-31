@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getCookie } from "cookies-next";
 
 const StudentPage = ({ params }: { params: { studentId: string } }) => {
   const [student, setStudent] = useState<any>({});
@@ -34,19 +35,35 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
   const [totalMarks, setTotalMarks] = useState<number>(0);
   const [open, setOpen] = useState(false);
   const [totalcriteria, setTotalCriteria] = useState(0);
+  const [seminarData, setSeminarData] = useState<any>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const mentorCookie = getCookie("Mentor");
+        if (!mentorCookie) {
+          console.error("Mentor cookie not found");
+          return;
+        }
+        console.log(mentorCookie);
+
+        const { accessToken, id } = JSON.parse(mentorCookie);
+
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          credentials: "include",
+        };
+
         const studentId = params.studentId;
         const baseUrl = process.env.API_BASE_URL;
         const url = `${baseUrl}/student/${studentId}`;
-        const response = await axios.get(url);
+        const response = await axios.get(url, { headers });
         setStudent(response.data.data);
         console.log(response.data.data);
 
         const smarksUrl = `https://sip-backend-api.onrender.com/api/v1/student/${studentId}/seminar/marks`;
-        const smarksRes = await axios.get(smarksUrl);
+        const smarksRes = await axios.get(smarksUrl, { headers });
         setSmarks(smarksRes.data.data);
 
         const seminarTotalMarks = smarksRes.data.data.reduce(
@@ -70,6 +87,7 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
         console.error("Error fetching data:", error);
       }
     };
+
     fetchData();
   }, [params.studentId]);
   const handleMarkChange = (index: number, newMarks: string) => {
@@ -85,12 +103,26 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
     event.preventDefault();
 
     try {
+      const mentorCookie = getCookie("Mentor");
+      if (!mentorCookie) {
+        console.error("Mentor cookie not found");
+        return;
+      }
+      console.log(mentorCookie);
+
+      const { accessToken, id } = JSON.parse(mentorCookie);
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        credentials: "include",
+      };
       const studentId = params.studentId;
       const baseUrl = process.env.API_BASE_URL;
       const evaluateUrl = `${baseUrl}/mentor/seminar/evaluate/${studentId}`;
 
       // Send POST request with updated marks
-      const response = await axios.post(evaluateUrl, updatedMarks);
+      const response = await axios.post(evaluateUrl, updatedMarks, { headers });
       console.log(updatedMarks);
       // location.reload();
       const total = updatedMarks.reduce(
@@ -106,6 +138,36 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
       toast.error("Error saving changes:", error.response.data);
     }
   };
+  const fetchSeminarData = () => {
+    const mentorCookie = getCookie("Mentor");
+    if (!mentorCookie) {
+      console.error("Mentor cookie not found");
+      return;
+    }
+    console.log(mentorCookie);
+    const studentId = params.studentId;
+
+    const { accessToken, id } = JSON.parse(mentorCookie);
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      credentials: "include",
+    };
+    const url = `https://sip-backend-api.onrender.com/api/v1/student/${studentId}/seminar`;
+    axios
+      .get(url, { headers })
+      .then((response) => {
+        setSeminarData(response.data.data);
+        console.log(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching Seminar Data:", error);
+      });
+  };
+  useEffect(() => {
+    fetchSeminarData();
+  }, [params.studentId]);
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <div className="bg-gray-900 text-white py-6 text-center rounded-lg">
@@ -198,6 +260,139 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
                       </DialogContent>
                     </Dialog>
                   </CardFooter>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Seminar PDFs</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-4"></div>
+                    {seminarData.length === 0 && (
+                      <div>
+                        <p>No data available.</p>
+                      </div>
+                    )}
+                    {seminarData.length > 0 && (
+                      <div className="flex justify-center items-center mt-8">
+                        <Card className="w-[50vw] max-w-[150vh]">
+                          <CardHeader>
+                            <CardTitle className="text-3xl text-center">
+                              SEMINAR DETAILS
+                            </CardTitle>
+                            <CardDescription className="text-lg text-center">
+                              Seminar details
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
+                              <div className="flex justify-center space-y-2">
+                                <div className="flex items-center w-full max-w-xl">
+                                  <Label
+                                    htmlFor="companyName"
+                                    className="text-md font-semibold w-24 md:w-32 mr-2 md:mr-4 text-right"
+                                  >
+                                    TITLE:
+                                  </Label>
+                                  <div className="flex items-center  border rounded-md px-4 py-2 w-1/2">
+                                    <span className="text-base md:text-lg">
+                                      {seminarData[0].title}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex flex-col justify-center items-center ">
+                                <div className="w-3/4 h-64  rounded-md ">
+                                  <div>
+                                    {seminarData.length > 0 &&
+                                    seminarData[0].report ? (
+                                      <div className="flex items-center justify-between rounded-sm bg-slate-100 mt-2">
+                                        <p className="p-2 m-2">Report</p>
+                                        <div className="flex items-center">
+                                          <button
+                                            onClick={() =>
+                                              window.open(
+                                                seminarData[0].report,
+                                                "_blank"
+                                              )
+                                            }
+                                            className="px-3 py-2 m-3 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer"
+                                          >
+                                            Open PDF in New Tab
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center justify-between rounded-sm bg-slate-100 mt-2">
+                                        <p className="p-2 m-2">
+                                          Report NOt Uploaded
+                                        </p>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  <div>
+                                    {seminarData.length > 0 &&
+                                    seminarData[0].abstract ? (
+                                      <div className="flex items-center justify-between rounded-sm bg-slate-100 mt-2">
+                                        <p className="p-2 m-2">Abstract</p>
+                                        {seminarData[0].abstract && (
+                                          <button
+                                            onClick={() =>
+                                              window.open(
+                                                seminarData[0].abstract,
+                                                "_blank"
+                                              )
+                                            }
+                                            className="px-3 py-2 m-3 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer"
+                                          >
+                                            Open PDF in New Tab
+                                          </button>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center justify-between rounded-sm bg-slate-100 mt-2">
+                                        <p className="p-2 m-2">
+                                          Upload the Abstract
+                                        </p>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  <div>
+                                    {seminarData[0].ppt ? (
+                                      <div className="flex items-center justify-between rounded-sm bg-slate-100 mt-2">
+                                        <p className="m-2 p-2">PPT :</p>
+                                        <button
+                                          onClick={() =>
+                                            window.open(
+                                              seminarData[0].ppt,
+                                              "_blank"
+                                            )
+                                          }
+                                          className="px-3 py-2 m-3 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer"
+                                        >
+                                          Open PPT in New Tab
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center justify-between rounded-sm bg-slate-100 mt-2">
+                                        <p className="p-2 m-2">
+                                          Upload the PPT
+                                        </p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                          <CardFooter className="flex justify-end"></CardFooter>
+                        </Card>
+                      </div>
+                    )}
+                  </CardContent>
+                  <CardFooter className="flex justify-end"></CardFooter>
                 </Card>
               </div>
             </div>

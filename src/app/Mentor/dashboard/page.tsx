@@ -50,7 +50,7 @@ export default function StudentTable() {
           rollNo: item.rollNo,
           prnNo: item.prnNo,
           registrationId: item.registrationId,
-          id: item._id,
+          id: item.id,
         }))
       );
       console.log(resData);

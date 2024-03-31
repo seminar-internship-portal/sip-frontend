@@ -70,7 +70,7 @@ export function DataTable<TData, TValue>({
             className="max-w-sm"
           />
 
-          <Button onClick={() => downloadToExcel()}>Export</Button>
+          {/* <Button onClick={() => downloadToExcel()}>Export</Button> */}
         </div>
 
         <div>

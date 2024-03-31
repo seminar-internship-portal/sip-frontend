@@ -29,7 +29,9 @@ const Seminar = () => {
   const [report, setReport] = useState<File | null>(null);
   const [abstract, setAbstract] = useState<File | null>(null);
   const [ppt, setPpt] = useState<File | null>(null);
-
+  const [uploadProgressA, setUploadProgressA] = useState<number>(0);
+  const [uploadProgressP, setUploadProgressP] = useState<number>(0); // Upload progress for ppt
+  const [uploadProgressR, setUploadProgressR] = useState<number>(0);
   const fetchSeminarData = () => {
     const studentCookie = getCookie("Student");
     if (!studentCookie) {
@@ -130,9 +132,18 @@ const Seminar = () => {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "multipart/form-data",
           },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round(
+              (progressEvent.loaded / (progressEvent.total ?? 1)) * 100
+            );
+            setUploadProgressR(progress);
+          },
         })
         .then((response: any) => {
           console.log("File uploaded successfully:", response.data);
+          // Reset progress and clear selected file
+          setUploadProgressR(0);
+          setReport(null);
           fetchSeminarData();
         })
         .catch((error) => {
@@ -142,6 +153,7 @@ const Seminar = () => {
       console.error("No file selected");
     }
   };
+
   const handleFileChangeA = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
@@ -171,9 +183,18 @@ const Seminar = () => {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "multipart/form-data",
           },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round(
+              (progressEvent.loaded / (progressEvent.total ?? 1)) * 100
+            );
+            setUploadProgressA(progress);
+          },
         })
         .then((response: any) => {
           console.log("File uploaded successfully:", response.data);
+          // Reset progress and clear selected file
+          setUploadProgressA(0);
+          setAbstract(null);
           fetchSeminarData();
         })
         .catch((error) => {
@@ -183,6 +204,7 @@ const Seminar = () => {
       console.error("No file selected");
     }
   };
+
   const handleFileChangeP = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
@@ -212,9 +234,18 @@ const Seminar = () => {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "multipart/form-data",
           },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round(
+              (progressEvent.loaded / (progressEvent.total ?? 1)) * 100
+            );
+            setUploadProgressP(progress);
+          },
         })
         .then((response: any) => {
           console.log("File uploaded successfully:", response.data);
+          // Reset progress and clear selected file
+          setUploadProgressP(0);
+          setPpt(null);
           fetchSeminarData();
         })
         .catch((error) => {
@@ -239,7 +270,7 @@ const Seminar = () => {
         {seminarData.length === 0 && (
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger className="flex items-center px-3 py-2 text-white bg-black rounded-sm focus:outline-none cursor-pointer">
-              ADD INTERNSHIP
+              ADD Seminar Details
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -267,7 +298,7 @@ const Seminar = () => {
       </div>
       {seminarData.length > 0 && (
         <div className="flex justify-center items-center mt-8">
-          <Card className="w-[80vw] max-w-[150vh]">
+          <Card className="w-[50vw] max-w-[150vh]">
             <CardHeader>
               <CardTitle className="text-3xl text-center">
                 SEMINAR DETAILS
@@ -278,135 +309,238 @@ const Seminar = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
-                <div className="flex flex-col justify-center space-y-2">
-                  <div className="flex items-center gap-2">
+                <div className="flex justify-center space-y-2">
+                  <div className="flex items-center w-full max-w-xl">
                     <Label
                       htmlFor="companyName"
-                      className="text-base font-semibold w-40"
+                      className="text-md font-semibold w-24 md:w-32 mr-2 md:mr-4 text-right"
                     >
-                      TITLE :
+                      TITLE:
                     </Label>
-                    <div className="flex items-center border rounded-md px-3 py-1">
-                      <span className="text-sm">{seminarData[0].title}</span>
+                    <div className="flex items-center  border rounded-md px-4 py-2 w-1/2">
+                      <span className="text-base md:text-lg">
+                        {seminarData[0].title}
+                      </span>
                     </div>
                   </div>
                 </div>
+
                 <div className="flex flex-col justify-center items-center ">
-                  <div className="w-full h-64 bg-gray-200 rounded-md ">
+                  <div className="w-3/4 h-64  rounded-md ">
                     <div>
                       {seminarData.length > 0 && seminarData[0].report ? (
-                        <div className="flex items-center">
+                        <div className="flex items-center justify-between rounded-sm bg-slate-100 mt-2">
                           <p className="p-2 m-2">Report</p>
-                          <button
-                            onClick={() =>
-                              openPdfInNewTab(seminarData[0].report)
-                            }
-                            className="px-3 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer"
-                          >
-                            Open PDF in New Tab
-                          </button>
+                          <div className="flex items-center">
+                            <button
+                              onClick={() =>
+                                window.open(seminarData[0].report, "_blank")
+                              }
+                              className="px-3 py-2 m-3 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer"
+                            >
+                              Open PDF in New Tab
+                            </button>
+                            <button
+                              // onClick={handleDeleteAbstract}
+                              className="px-3 py-2 m-3 text-white bg-red-500 rounded-full hover:bg-red-700 focus:outline-none cursor-pointer"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                       ) : (
-                        <Dialog>
-                          <DialogTrigger className="flex items-center px-3 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer">
-                            Add Report
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Add Report</DialogTitle>
-                            </DialogHeader>
-                            <form>
-                              <input
-                                type="file"
-                                onChange={handleFileChangeR}
-                                accept=".pdf"
-                              />
-                              <DialogFooter className="p-5">
-                                <Button onClick={handleFileUploadR}>
-                                  Upload
-                                </Button>
-                              </DialogFooter>
-                            </form>
-                          </DialogContent>
-                        </Dialog>
+                        <div className="flex items-center justify-between rounded-sm bg-slate-100 mt-2">
+                          <p className="p-2 m-2">
+                            Upload the report to see it here.
+                          </p>
+                          <Dialog>
+                            <DialogTrigger className="flex items-center px-3 py-2 m-3 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer">
+                              Add Report
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Add Report</DialogTitle>
+                              </DialogHeader>
+                              <form>
+                                <input
+                                  type="file"
+                                  onChange={handleFileChangeR}
+                                  accept=".pdf"
+                                />
+                                <DialogFooter className="p-5">
+                                  <Button onClick={handleFileUploadR}>
+                                    Upload
+                                  </Button>
+                                </DialogFooter>
+
+                                {/* Progress Bar */}
+                                <div className="relative w-full h-6 bg-gray-200 rounded-full overflow-hidden">
+                                  <div
+                                    className="absolute top-0 left-0 h-full bg-blue-500 rounded-full"
+                                    style={{
+                                      width: `${uploadProgressR}%`,
+                                      transition: "width 0.3s ease-in-out",
+                                    }}
+                                  ></div>
+                                </div>
+                                <div className="flex justify-between mt-2">
+                                  <span className="text-xs text-gray-500">
+                                    {uploadProgressA === 100
+                                      ? "Upload Complete"
+                                      : `${uploadProgressR}%`}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    Max: 100%
+                                  </span>
+                                </div>
+                              </form>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
                       )}
                     </div>
 
                     <div>
                       {seminarData.length > 0 && seminarData[0].abstract ? (
-                        <div className="flex items-center">
+                        <div className="flex items-center justify-between rounded-sm bg-slate-100 mt-2">
                           <p className="p-2 m-2">Abstract</p>
                           {seminarData[0].abstract && (
                             <button
                               onClick={() =>
                                 window.open(seminarData[0].abstract, "_blank")
                               }
-                              className="px-3 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer"
+                              className="px-3 py-2 m-3 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer"
                             >
                               Open PDF in New Tab
                             </button>
                           )}
                         </div>
                       ) : (
-                        <Dialog>
-                          <DialogTrigger className="flex items-center px-3 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer">
-                            Add Abstract
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Add Abstract</DialogTitle>
-                            </DialogHeader>
-                            <form>
-                              <input
-                                type="file"
-                                onChange={handleFileChangeA}
-                                accept=".pdf"
-                              />
-                              <DialogFooter className="p-5">
-                                <Button onClick={handleFileUploadA}>
-                                  Upload
-                                </Button>
-                              </DialogFooter>
-                            </form>
-                          </DialogContent>
-                        </Dialog>
+                        <div className="flex items-center justify-between rounded-sm bg-slate-100 mt-2">
+                          <p className="p-2 m-2">
+                            Upload the Abstract to see it here.
+                          </p>
+                          <Dialog>
+                            <DialogTrigger className="flex items-center px-3 py-2 m-3 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer">
+                              Add Abstract
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Add Abstract</DialogTitle>
+                              </DialogHeader>
+                              <form>
+                                <input
+                                  type="file"
+                                  onChange={handleFileChangeA}
+                                  accept=".pdf"
+                                />
+                                <DialogFooter className="p-5 ">
+                                  <Button onClick={handleFileUploadA}>
+                                    Upload
+                                  </Button>
+                                </DialogFooter>
+
+                                {/* Progress Bar */}
+                                <div className="relative w-full h-6 bg-gray-200 rounded-full overflow-hidden">
+                                  <div
+                                    className="absolute top-0 left-0 h-full bg-blue-500 rounded-full"
+                                    style={{
+                                      width: `${uploadProgressA}%`,
+                                      transition: "width 0.3s ease-in-out",
+                                    }}
+                                  ></div>
+                                </div>
+                                <div className="flex justify-between mt-2">
+                                  <span className="text-xs text-gray-500">
+                                    {uploadProgressA === 100
+                                      ? "Upload Complete"
+                                      : `${uploadProgressA}%`}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    Max: 100%
+                                  </span>
+                                </div>
+                              </form>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
                       )}
                     </div>
 
                     <div>
                       {seminarData[0].ppt ? (
-                        <div className="flex items-center">
-                          <p className="mr-4">PPT :</p>
+                        <div className="flex items-center justify-between rounded-sm bg-slate-100 mt-2">
+                          <p className="m-2 p-2">PPT :</p>
                           <button
-                            onClick={() => openPdfInNewTab(seminarData[0].ppt)}
-                            className="px-3 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer"
+                            onClick={() =>
+                              window.open(seminarData[0].ppt, "_blank")
+                            }
+                            className="px-3 py-2 m-3 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer"
                           >
-                            Open PDF in New Tab
+                            Open PPT in New Tab
                           </button>
                         </div>
                       ) : (
-                        <Dialog>
-                          <DialogTrigger className="flex items-center px-3 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer">
-                            Add PPT
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Add PPT</DialogTitle>
-                            </DialogHeader>
-                            <form>
-                              <input
-                                type="file"
-                                onChange={handleFileChangeP}
-                                accept=".pdf"
-                              />
-                              <DialogFooter className="p-5">
-                                <Button onClick={handleFileUploadP}>
-                                  Upload
-                                </Button>
-                              </DialogFooter>
-                            </form>
-                          </DialogContent>
-                        </Dialog>
+                        <div className="flex items-center justify-between rounded-sm bg-slate-100 mt-2">
+                          <p className="p-2 m-2">
+                            Upload the PPT to see it here.
+                          </p>
+                          <Dialog>
+                            <DialogTrigger className="flex items-center px-3 py-2 m-3 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer">
+                              Add PPT
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Add PPT</DialogTitle>
+                              </DialogHeader>
+                              <form>
+                                <input
+                                  type="file"
+                                  onChange={handleFileChangeP}
+                                  accept=".ppt, .pptx"
+                                />
+                                <DialogFooter className="p-5">
+                                  <Button onClick={handleFileUploadP}>
+                                    Upload
+                                  </Button>
+                                </DialogFooter>
+                                {/* Display progress bar */}
+                                <div className="relative w-full h-6 bg-gray-200 rounded-full overflow-hidden">
+                                  <div
+                                    className="absolute top-0 left-0 h-full bg-blue-500 rounded-full"
+                                    style={{
+                                      width: `${uploadProgressP}%`,
+                                      transition: "width 0.3s ease-in-out",
+                                    }}
+                                  ></div>
+                                </div>
+                                <div className="flex justify-between mt-2">
+                                  <span className="text-xs text-gray-500">
+                                    {uploadProgressP === 100
+                                      ? "Upload Complete"
+                                      : `${uploadProgressP}%`}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    Max: 100%
+                                  </span>
+                                </div>
+                              </form>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
                       )}
                     </div>
                   </div>

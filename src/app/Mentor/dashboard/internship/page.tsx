@@ -31,7 +31,7 @@ export default function StudentTable() {
 
       console.log(ayear);
       const response = await fetch(
-        `https://sip-backend-api.onrender.com/api/v1/mentor/studentAssigned/${mentor._id}`,
+        `https://sip-backend-api.onrender.com/api/v1/mentor/studentAssigned/${mentor._id}?academicYear=${ayear}`,
 
         {
           headers: headers,

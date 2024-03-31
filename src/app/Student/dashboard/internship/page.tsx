@@ -29,24 +29,25 @@ import {
 import { Link, MoveRight } from "lucide-react";
 import { useSelector } from "react-redux";
 import axios from "axios";
-
+import { Blocks } from "react-loader-spinner";
+import toast, { Toaster } from "react-hot-toast";
 const internship = () => {
   const [companyName, setCompanyName] = useState("");
   const [duration, setDuration] = useState("");
   const [status, setStatus] = useState("");
   const [internshipdata, setInternshipData] = useState([]);
   const student = useSelector(selectStudent);
-
+  const [loading, setLoading] = useState(false);
   // completetion Letter
   const [selectedFileCL, setSelectedFileCL] = useState<Array<File | null>>([]);
-  const [selectedfileCLT, setSelectedFileCLT] = useState<any>(null);
+  const [loadingCL, setloadingCL] = useState(false);
 
   const [selectedFilePL, setSelectedFilePL] = useState<Array<File | null>>([]);
   const [selectedfilePLT, setSelectedFilePLT] = useState<any>(null);
 
   //Offer Letter
   const [selectedFileOL, setSelectedFileOL] = useState<Array<File | null>>([]);
-  const [selectedFileOLT, setselectedfileOLT] = useState<any>(null);
+  const [loadingOL, setloadingOL] = useState(false);
 
   const [open, setisOpen] = useState(false);
 
@@ -64,12 +65,7 @@ const internship = () => {
 
   const submitInternshipHandler = (event: any) => {
     event.preventDefault();
-    // Here you can submit the form data or perform any other actions
-    // console.log("Form submitted:", {
-    //   companyName,
-    //   duration,
-    //   status,
-    // });
+
     const data = {
       companyName: companyName,
       duration: duration,
@@ -97,6 +93,8 @@ const internship = () => {
         .post(url, data, config)
         .then((response) => {
           setInternshipData(response.data.data);
+          setisOpen(false);
+          fetchInternshipData();
         })
         .catch((error) => {
           console.error("Error fetching Internship Data:", error);
@@ -139,32 +137,143 @@ const internship = () => {
   //Permission Letter
   const handleCompeletionOL = (
     event: React.FormEvent<HTMLFormElement>,
-    index: number
+    index: number,
+    id: number
   ) => {
     event.preventDefault();
+    setloadingOL(true);
     const file = selectedFileOL[index];
-    console.log(file);
+    if (file) {
+      const studentCookie = getCookie("Student");
+      if (!studentCookie) {
+        console.error("Student cookie not found");
+        setloadingOL(false);
+        return;
+      }
+
+      const { accessToken, student } = JSON.parse(studentCookie);
+
+      const formData = new FormData();
+      formData.append("offerLetter", file);
+      formData.append("id", id.toString());
+      console.log(formData);
+      const url = `https://sip-backend-api.onrender.com/api/v1/student/uploadOfferLetter`;
+      axios
+        .post(url, formData, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response: any) => {
+          console.log("File uploaded successfully:", response.data);
+          fetchInternshipData();
+          toast.success("File uploaded successfully");
+          setloadingOL(false);
+        })
+        .catch((error) => {
+          console.error("Error uploading file:", error);
+          toast.error("Error uploading file");
+          setloadingOL(false);
+        });
+    } else {
+      console.error("No file selected");
+      toast.error("No file selected");
+      setLoading(false);
+    }
+
     // Proceed with uploading the file
   };
 
   const handleCompeletionPL = (
     event: React.FormEvent<HTMLFormElement>,
-    index: number
+    index: number,
+    id: number
   ) => {
     event.preventDefault();
+    setLoading(true); // Set loading state to true when upload starts
     const file = selectedFilePL[index];
-    console.log(file);
-
-    // Proceed with uploading the file
+    if (file) {
+      const studentCookie = getCookie("Student");
+      if (!studentCookie) {
+        console.error("Student cookie not found");
+        setLoading(false); // Reset loading state
+        return;
+      }
+      const { accessToken, student } = JSON.parse(studentCookie);
+      const formData = new FormData();
+      formData.append("permissionLetter", file);
+      formData.append("id", id.toString());
+      console.log(formData);
+      const url = `https://sip-backend-api.onrender.com/api/v1/student/uploadPermissionLetter`;
+      axios
+        .post(url, formData, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response: any) => {
+          console.log("File uploaded successfully:", response.data);
+          fetchInternshipData();
+          setLoading(false); // Reset loading state when upload finishes
+        })
+        .catch((error) => {
+          console.error("Error uploading file:", error);
+          setLoading(false); // Reset loading state on error
+        });
+    } else {
+      console.error("No file selected");
+      setLoading(false); // Reset loading state
+    }
   };
 
   const handleCompeletionCL = (
     event: React.FormEvent<HTMLFormElement>,
-    index: number
+    index: number,
+    id: number
   ) => {
     event.preventDefault();
+    setloadingCL(true);
     const file = selectedFileCL[index];
-    console.log(file);
+    if (file) {
+      const studentCookie = getCookie("Student");
+      if (!studentCookie) {
+        setloadingCL(false);
+        console.error("Student cookie not found");
+        return;
+      }
+
+      const { accessToken, student } = JSON.parse(studentCookie);
+
+      const formData = new FormData();
+      formData.append("completionLetter", file);
+      formData.append("id", id.toString());
+      console.log(formData);
+      const url = `https://sip-backend-api.onrender.com/api/v1/student/uploadCompletionLetter`;
+      axios
+        .post(url, formData, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response: any) => {
+          console.log("File uploaded successfully:", response.data);
+          fetchInternshipData();
+          toast.success("File uploaded successfully");
+          setloadingCL(false);
+        })
+        .catch((error) => {
+          console.error("Error uploading file:", error);
+          toast.error("Error uploading file");
+          setloadingCL(false);
+        });
+    } else {
+      console.error("No file selected");
+      toast.error("No file selected");
+      setloadingCL(false);
+    }
 
     // Proceed with uploading the file
   };
@@ -317,157 +426,252 @@ const internship = () => {
                       </div>
                     </div>
                     <div className="className=flex flex-col justify-center items-center mt-8">
-                      <div className="w-full h-64 bg-gray-200 rounded-md flex flex-col justify-center items-center p-5">
-                        <div className="flex items-center justify-evenly">
-                          <p className="mr-4">Offer Letter : </p>
-                          {selectedFileOL[index] ? (
-                            <div className="flex  items-center">
-                              <p className="p-2 m-2">
-                                {selectedFileOL[index]?.name}
-                              </p>
-                              {selectedFileOL[index] && (
-                                <button
-                                  onClick={() =>
-                                    openPdfInNewTab(
-                                      selectedFileOL[index] as File
-                                    )
-                                  }
-                                  className="px-3 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer"
-                                >
-                                  Open PDF in New Tab
-                                </button>
-                              )}
+                      <div className="w-full h-64 bg-slate-200 rounded-md flex flex-col justify-center items-center p-5">
+                        <div className="w-full flex items-center justify-evenly  rounded-sm bg-white mt-2">
+                          {loadingOL ? (
+                            <div className="flex items-center">
+                              <p className="p-2 m-2">Uploading file...</p>
+                              <Blocks
+                                height="40"
+                                width="40"
+                                color="#4fa94d"
+                                ariaLabel="blocks-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="blocks-wrapper"
+                                visible={true}
+                              />
                             </div>
                           ) : (
-                            <Dialog>
-                              <DialogTrigger className="flex items-center px-3 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer">
-                                Add Offer Letter
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>Add Offer Letter</DialogTitle>
-                                </DialogHeader>
-                                <form
-                                  onSubmit={(event) =>
-                                    handleCompeletionOL(event, index)
-                                  }
-                                >
-                                  <input
-                                    type="file"
-                                    onChange={(event) =>
-                                      handleFileChangeOL(event, index)
-                                    }
-                                    accept=".pdf"
-                                  />
-                                  <DialogFooter className="p-5">
-                                    <Button type="submit">Upload</Button>
-                                  </DialogFooter>
-                                </form>
-                              </DialogContent>
-                            </Dialog>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-evenly">
-                          <p className="mr-4">Permission Letter : </p>
-                          {selectedFilePL[index] ? (
-                            <div className="flex  items-center">
-                              <p className="p-2 m-2">
-                                {selectedFilePL[index]?.name}
-                              </p>
-                              {selectedFilePL[index] && (
-                                <button
-                                  onClick={() =>
-                                    openPdfInNewTab(
-                                      selectedFilePL[index] as File
-                                    )
-                                  }
-                                  className="px-3 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer"
-                                >
-                                  Open PDF in New Tab
-                                </button>
+                            <>
+                              {internship.offerLetter ? (
+                                <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                                  <p className="p-2 m-2">Offer Letter :</p>
+                                  <div className="flex">
+                                    <button
+                                      onClick={() =>
+                                        window.open(
+                                          internship.offerLetter,
+                                          "_blank"
+                                        )
+                                      }
+                                      className="px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer"
+                                    >
+                                      Open PDF in New Tab
+                                    </button>
+                                    <button
+                                      // Add functionality for deleting the offer letter if needed
+                                      className="px-3 py-2 m-3 text-white bg-red-500 rounded-md hover:bg-red-700 focus:outline-none cursor-pointer"
+                                    >
+                                      Delete
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                                  <p className="p-2 m-2">
+                                    Upload the offer letter to see it here.
+                                  </p>
+                                  <Dialog>
+                                    <DialogTrigger className="flex items-center px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
+                                      Add Offer Letter
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                      <DialogHeader>
+                                        <DialogTitle>
+                                          Add Offer Letter
+                                        </DialogTitle>
+                                      </DialogHeader>
+                                      <form
+                                        onSubmit={(event) =>
+                                          handleCompeletionOL(
+                                            event,
+                                            index,
+                                            internship._id
+                                          )
+                                        }
+                                      >
+                                        <input
+                                          type="file"
+                                          onChange={(event) =>
+                                            handleFileChangeOL(event, index)
+                                          }
+                                          accept=".pdf"
+                                        />
+                                        <DialogFooter className="p-5">
+                                          <Button type="submit">Upload</Button>
+                                        </DialogFooter>
+                                      </form>
+                                    </DialogContent>
+                                  </Dialog>
+                                </div>
                               )}
-                            </div>
-                          ) : (
-                            <Dialog>
-                              <DialogTrigger className="flex items-center px-3 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer">
-                                Add Permission Letter
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>
-                                    Add Permission Letter
-                                  </DialogTitle>
-                                </DialogHeader>
-                                <form
-                                  onSubmit={(event) =>
-                                    handleCompeletionPL(event, index)
-                                  }
-                                >
-                                  <input
-                                    type="file"
-                                    onChange={(event) =>
-                                      handleFileChangePL(event, index)
-                                    }
-                                    accept=".pdf"
-                                  />
-                                  <DialogFooter className="p-5">
-                                    <Button type="submit">Upload</Button>
-                                  </DialogFooter>
-                                </form>
-                              </DialogContent>
-                            </Dialog>
+                            </>
                           )}
                         </div>
 
-                        <div className="flex items-center justify-evenly">
-                          <p className="mr-4">Completion Letter : </p>
-                          {selectedFileCL[index] ? (
-                            <div className="flex  items-center">
-                              <p className="p-2 m-2">
-                                {selectedFileCL[index]?.name}
-                              </p>
-                              {selectedFileCL[index] && (
-                                <button
-                                  onClick={() =>
-                                    openPdfInNewTab(
-                                      selectedFileCL[index] as File
-                                    )
-                                  }
-                                  className="px-3 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer"
-                                >
-                                  Open PDF in New Tab
-                                </button>
-                              )}
+                        <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                          {loading ? ( // Check if loading state is true
+                            <div className="flex items-center">
+                              <p className="p-2 m-2">Uploading file...</p>
+                              <Blocks
+                                height="40"
+                                width="40"
+                                color="#4fa94d"
+                                ariaLabel="blocks-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="blocks-wrapper"
+                                visible={true}
+                              />
                             </div>
                           ) : (
-                            <Dialog>
-                              <DialogTrigger className="flex items-center px-3 py-2 text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none cursor-pointer">
-                                Add Completion Letter
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogTitle>
-                                    Add Completion Letter
-                                  </DialogTitle>
-                                </DialogHeader>
-                                <form
-                                  onSubmit={(event) =>
-                                    handleCompeletionCL(event, index)
-                                  }
-                                >
-                                  <input
-                                    type="file"
-                                    onChange={(event) =>
-                                      handleFileChangeCL(event, index)
-                                    }
-                                    accept=".pdf"
-                                  />
-                                  <DialogFooter className="p-5">
-                                    <Button type="submit">Upload</Button>
-                                  </DialogFooter>
-                                </form>
-                              </DialogContent>
-                            </Dialog>
+                            <div className="w-full flex items-center justify-evenly ">
+                              {internship.permissionLetter ? (
+                                <div className="w-full flex items-center justify-between  rounded-sm bg-white mt-2">
+                                  <p className="p-2 m-2">Permission Letter :</p>
+                                  <div>
+                                    <button
+                                      onClick={() =>
+                                        window.open(
+                                          internship.permissionLetter,
+                                          "_blank"
+                                        )
+                                      }
+                                      className="px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer"
+                                    >
+                                      Open PDF in New Tab
+                                    </button>
+                                    <button
+                                      // Add functionality for deleting the permission letter if needed
+                                      className="px-3 py-2 m-3 text-white bg-red-500 rounded-md hover:bg-red-700 focus:outline-none cursor-pointer"
+                                    >
+                                      Delete
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                                  <p className="p-2 m-2">
+                                    Upload the PDF file for the Permission
+                                    Letter :
+                                  </p>
+                                  <Dialog>
+                                    <DialogTrigger className="flex items-center px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
+                                      Add Permission Letter
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                      <DialogHeader>
+                                        <DialogTitle>
+                                          Add Permission Letter
+                                        </DialogTitle>
+                                      </DialogHeader>
+                                      <form
+                                        onSubmit={(event) =>
+                                          handleCompeletionPL(
+                                            event,
+                                            index,
+                                            internship._id
+                                          )
+                                        }
+                                      >
+                                        <input
+                                          type="file"
+                                          onChange={(event) =>
+                                            handleFileChangePL(event, index)
+                                          }
+                                          accept=".pdf"
+                                        />
+                                        <DialogFooter className="p-5">
+                                          <Button type="submit">Upload</Button>
+                                        </DialogFooter>
+                                      </form>
+                                    </DialogContent>
+                                  </Dialog>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="w-full flex items-center justify-evenly rounded-sm bg-white mt-2">
+                          {loadingCL ? (
+                            <div className="flex items-center">
+                              <p className="p-2 m-2">Uploading file...</p>
+                              <Blocks
+                                height="40"
+                                width="40"
+                                color="#4fa94d"
+                                ariaLabel="blocks-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="blocks-wrapper"
+                                visible={true}
+                              />
+                            </div>
+                          ) : (
+                            <>
+                              {internship.completionLetter ? (
+                                <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                                  <p className="p-2 m-2">Completion Letter :</p>
+                                  <div className="flex">
+                                    <button
+                                      onClick={() =>
+                                        window.open(
+                                          internship.completionLetter,
+                                          "_blank"
+                                        )
+                                      }
+                                      className="px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer"
+                                    >
+                                      Open PDF in New Tab
+                                    </button>
+                                    <button
+                                      // Add functionality for deleting the completion letter if needed
+                                      className="px-3 py-2 m-3 text-white bg-red-500 rounded-md hover:bg-red-700 focus:outline-none cursor-pointer"
+                                    >
+                                      Delete
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                                  <p className="p-2 m-2">
+                                    Upload the PDF file for the Completion
+                                    Letter :
+                                  </p>
+                                  <Dialog>
+                                    <DialogTrigger className="flex items-center px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
+                                      Add Completion Letter
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                      <DialogHeader>
+                                        <DialogTitle>
+                                          Add Completion Letter
+                                        </DialogTitle>
+                                      </DialogHeader>
+                                      <form
+                                        onSubmit={(event) =>
+                                          handleCompeletionCL(
+                                            event,
+                                            index,
+                                            internship._id
+                                          )
+                                        }
+                                      >
+                                        <input
+                                          type="file"
+                                          onChange={(event) =>
+                                            handleFileChangeCL(event, index)
+                                          }
+                                          accept=".pdf"
+                                        />
+                                        <DialogFooter className="p-5">
+                                          <Button type="submit">Upload</Button>
+                                        </DialogFooter>
+                                      </form>
+                                    </DialogContent>
+                                  </Dialog>
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>

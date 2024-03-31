@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import toast from "react-hot-toast";
+import { getCookie } from "cookies-next";
 
 const Intermarks = ({ params }: { params: { studentId: string } }) => {
   const [student, setStudent] = useState<any>({});
@@ -40,18 +41,33 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
   const [totalcriteria, setTotalCriteria] = useState(0);
   //dailog box open or close
   const [open, setOpen] = useState(false);
+  const [internshipdata, setInternshipData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const mentorCookie = getCookie("Mentor");
+        if (!mentorCookie) {
+          console.error("Mentor cookie not found");
+          return;
+        }
+        console.log(mentorCookie);
+
+        const { accessToken, id } = JSON.parse(mentorCookie);
+
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          credentials: "include",
+        };
         const studentId = params.studentId;
         const baseUrl = process.env.API_BASE_URL;
         const url = `${baseUrl}/student/${studentId}`;
-        const response = await axios.get(url);
+        const response = await axios.get(url, { headers });
         setStudent(response.data.data);
 
         const interMarksUrl = `https://sip-backend-api.onrender.com/api/v1/student/${studentId}/internship/marks`;
-        const interMarksRes = await axios.get(interMarksUrl);
+        const interMarksRes = await axios.get(interMarksUrl, { headers });
         setInterMarks(interMarksRes.data.data);
         // console.log(interMarksRes.data.data);
 
@@ -96,12 +112,26 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
   const handleSaveChanges = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent default form submission behavior
     try {
+      const mentorCookie = getCookie("Mentor");
+      if (!mentorCookie) {
+        console.error("Mentor cookie not found");
+        return;
+      }
+      console.log(mentorCookie);
+
+      const { accessToken, id } = JSON.parse(mentorCookie);
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        credentials: "include",
+      };
       const studentId = params.studentId;
       const baseUrl = process.env.API_BASE_URL;
       const evaluateUrl = `${baseUrl}/mentor/internship/evaluate/${studentId}`;
 
       // Send POST request with updated marks
-      const response = await axios.post(evaluateUrl, updatedMarks);
+      const response = await axios.post(evaluateUrl, updatedMarks, { headers });
       console.log(updatedMarks);
       // location.reload();
 
@@ -117,7 +147,37 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
       toast.error("Error saving changes:", error.response.data);
     }
   };
+  const fetchInternshipData = () => {
+    const mentorCookie = getCookie("Mentor");
+    const studentId = params.studentId;
 
+    if (!mentorCookie) {
+      console.error("Mentor cookie not found");
+      return;
+    }
+    console.log(mentorCookie);
+
+    const { accessToken, id } = JSON.parse(mentorCookie);
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      credentials: "include",
+    };
+    const url = `https://sip-backend-api.onrender.com/api/v1/student/${studentId}/internship `;
+    axios
+      .get(url, { headers })
+      .then((response) => {
+        setInternshipData(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching Internship Data:", error);
+      });
+  };
+
+  useEffect(() => {
+    fetchInternshipData();
+  }, []);
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <div className="bg-gray-900 text-white py-6 text-center rounded-lg">
@@ -212,6 +272,174 @@ const Intermarks = ({ params }: { params: { studentId: string } }) => {
                       </DialogContent>
                     </Dialog>
                   </CardFooter>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Internship pdfs</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {internshipdata && internshipdata.length > 0 && (
+                      <div className=" mt-8">
+                        {internshipdata.map((internship: any, index: any) => (
+                          <Card key={index} className="w-full max-w-full">
+                            <CardHeader>
+                              <CardTitle className="text-3xl text-center">
+                                INTERNSHIP DETAILS
+                              </CardTitle>
+                              <CardDescription className="text-lg text-center">
+                                Internship details
+                              </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                              <form>
+                                <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
+                                  <div className="flex flex-col justify-center space-y-2">
+                                    <div className="flex items-center gap-2">
+                                      <Label
+                                        htmlFor="companyName"
+                                        className="text-base font-semibold w-40"
+                                      >
+                                        Company Name :
+                                      </Label>
+                                      <div className="flex items-center border rounded-md px-3 py-1">
+                                        <span className="text-sm">
+                                          {internship?.companyName}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Label
+                                        htmlFor="internshipType"
+                                        className="text-base font-semibold w-40"
+                                      >
+                                        Status :
+                                      </Label>
+                                      <div className="flex items-center border rounded-md px-3 py-1">
+                                        <span className="text-sm">
+                                          {internship?.status}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Label
+                                        htmlFor="startDate"
+                                        className="text-base font-semibold w-40"
+                                      >
+                                        Duration :
+                                      </Label>
+                                      <div className="flex items-center border rounded-md px-3 py-1">
+                                        <span className="text-sm">
+                                          {internship?.duration}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="className=flex flex-col justify-center items-center mt-8">
+                                    <div className="w-full h-64 bg-slate-200 rounded-md flex flex-col justify-center items-center p-5">
+                                      <div className="w-full flex items-center justify-evenly  rounded-sm bg-white mt-2">
+                                        <>
+                                          {internship.offerLetter ? (
+                                            <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                                              <p className="p-2 m-2">
+                                                Offer Letter :
+                                              </p>
+                                              <div className="flex">
+                                                <button
+                                                  onClick={() =>
+                                                    window.open(
+                                                      internship.offerLetter,
+                                                      "_blank"
+                                                    )
+                                                  }
+                                                  className="px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer"
+                                                >
+                                                  Open PDF in New Tab
+                                                </button>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                                              <p className="p-2 m-2">
+                                                Upload the offer letter
+                                              </p>
+                                            </div>
+                                          )}
+                                        </>
+                                      </div>
+
+                                      <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                                        <div className="w-full flex items-center justify-evenly ">
+                                          {internship.permissionLetter ? (
+                                            <div className="w-full flex items-center justify-between  rounded-sm bg-white mt-2">
+                                              <p className="p-2 m-2">
+                                                Permission Letter :
+                                              </p>
+                                              <div>
+                                                <button
+                                                  onClick={() =>
+                                                    window.open(
+                                                      internship.permissionLetter,
+                                                      "_blank"
+                                                    )
+                                                  }
+                                                  className="px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer"
+                                                >
+                                                  Open PDF in New Tab
+                                                </button>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                                              <p className="p-2 m-2">
+                                                Upload the PDF file
+                                              </p>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      <div className="w-full flex items-center justify-evenly rounded-sm bg-white mt-2">
+                                        <>
+                                          {internship.completionLetter ? (
+                                            <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                                              <p className="p-2 m-2">
+                                                Completion Letter :
+                                              </p>
+                                              <div className="flex">
+                                                <button
+                                                  onClick={() =>
+                                                    window.open(
+                                                      internship.completionLetter,
+                                                      "_blank"
+                                                    )
+                                                  }
+                                                  className="px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer"
+                                                >
+                                                  Open PDF in New Tab
+                                                </button>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
+                                              <p className="p-2 m-2">
+                                                Upload the PDF file
+                                              </p>
+                                            </div>
+                                          )}
+                                        </>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </form>
+                            </CardContent>
+                            <CardFooter className="flex justify-end"></CardFooter>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                  <CardFooter className="flex justify-end"></CardFooter>
                 </Card>
               </div>
             </div>

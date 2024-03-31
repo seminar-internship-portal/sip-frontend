@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getCookie } from "cookies-next";
 
 const StudentPage = ({ params }: { params: { studentId: string } }) => {
   const [student, setStudent] = useState<any>({});
@@ -33,22 +34,49 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const mentorCookie = getCookie("Mentor");
+        if (!mentorCookie) {
+          console.error("Mentor cookie not found");
+          return;
+        }
+        console.log(mentorCookie);
+
+        const { accessToken, id } = JSON.parse(mentorCookie);
+
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          credentials: "include",
+        };
         const studentId = params.studentId;
         const baseUrl = process.env.API_BASE_URL;
         const url = `${baseUrl}/student/${studentId}`;
-        const response = await axios.get(url);
+        const response = await axios.get(url, { headers });
         setStudent(response.data.data);
-        console.log(response.data.data);
 
+        // Fetch seminar marks
         const smarksUrl = `https://sip-backend-api.onrender.com/api/v1/student/${studentId}/seminar/marks`;
-        const smarksRes = await axios.get(smarksUrl);
-        setSmarks(smarksRes.data.data);
+        const smarksResponse = await fetch(smarksUrl, {
+          method: "GET",
+          headers: headers,
+        });
+        if (!smarksResponse.ok) {
+          throw new Error(`HTTP error! status: ${smarksResponse.status}`);
+        }
+        const smarksData = await smarksResponse.json();
+        setSmarks(smarksData.data);
 
-        // Set total seminar marks in state
-
+        // Fetch internship marks
         const interMarksUrl = `https://sip-backend-api.onrender.com/api/v1/student/${studentId}/internship/marks`;
-        const interMarksRes = await axios.get(interMarksUrl);
-        setInterMarks(interMarksRes.data.data);
+        const interMarksResponse = await fetch(interMarksUrl, {
+          method: "GET",
+          headers: headers,
+        });
+        if (!interMarksResponse.ok) {
+          throw new Error(`HTTP error! status: ${interMarksResponse.status}`);
+        }
+        const interMarksData = await interMarksResponse.json();
+        setInterMarks(interMarksData.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -109,9 +137,7 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
                       <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
                           <DialogTitle>Edit Marks</DialogTitle>
-                          <DialogDescription>
-                        
-                          </DialogDescription>
+                          <DialogDescription></DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-3 py-3">
                           {smarks.map((mark: any, index: any) => (
@@ -172,9 +198,7 @@ const StudentPage = ({ params }: { params: { studentId: string } }) => {
                       <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
                           <DialogTitle>Edit Marks</DialogTitle>
-                          <DialogDescription>
-                  
-                          </DialogDescription>
+                          <DialogDescription></DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-3 py-3">
                           {interMarks.map((mark: any, index: any) => (

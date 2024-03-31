@@ -25,6 +25,7 @@ import { useDispatch } from "react-redux";
 import { setMentor } from "../features/username/Slice";
 import { setStudent } from "../features/studentname/slice";
 import { setAdmin } from "@/app/features/adminname/slice";
+import Image from "next/image";
 
 export default function Log() {
   const router = useRouter();
@@ -108,7 +109,15 @@ export default function Log() {
 
   return (
     <div className="flex w-screen min-h-screen">
-      <div className="hidden bg-slate-950 lg:w-1/3 lg:min-h-screen lg:flex"></div>
+      <div className="hidden bg-slate-950 lg:w-1/3 lg:min-h-screen lg:flex justify-center items-center">
+        <Image
+          src="/pic.jpg"
+          width={250}
+          height={250}
+          alt="Picture of the author"
+        />
+      </div>
+
       <div className="flex flex-col items-center justify-center w-full p-4 lg:w-2/3">
         <Card className="w-full my-auto lg:w-2/3">
           <CardHeader className="space-y-1">

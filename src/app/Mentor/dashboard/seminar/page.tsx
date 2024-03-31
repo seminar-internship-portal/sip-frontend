@@ -30,7 +30,7 @@ export default function StudentTable() {
         credentials: "include",
       };
       const response = await fetch(
-        `https://sip-backend-api.onrender.com/api/v1/mentor/studentAssigned/${mentor._id}`,
+        `https://sip-backend-api.onrender.com/api/v1/mentor/studentAssigned/${mentor._id}?academicYear=${ayear}`,
 
         {
           headers: headers,
@@ -38,7 +38,7 @@ export default function StudentTable() {
         }
       ); // Assuming the API route is defined in pages/api/v1/student.ts
       const resData = await response.json();
-
+      console.log(resData);
       if (!resData.success) {
         throw new Error("Failed to fetch data");
       }
@@ -53,6 +53,7 @@ export default function StudentTable() {
           prnNo: item.prnNo,
           registrationId: item.registrationId,
           id: item.id,
+          seminarTopic: item.seminarTopic,
         }))
       );
     }

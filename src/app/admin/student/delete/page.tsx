@@ -19,48 +19,51 @@ import toast from "react-hot-toast";
 import { getCookie } from "cookies-next";
 
 // Function to fetch student data
-const fetchStudent = async () => {
-  try {
-    const adminCookie = getCookie("Admin");
-    if (!adminCookie) {
-      console.log("Admin cookie not found ");
-      return;
-    }
-
-    const { accessToken } = JSON.parse(adminCookie);
-
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-      credentials: "include",
-    };
-
-    const response = await fetch(
-      "https://sip-backend-api.onrender.com/api/v1/student",
-      {
-        method: "GET",
-        headers: headers,
-      }
-    );
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error("There was a problem with your fetch operation:", error);
-    return null;
-  }
-};
 
 const Page = () => {
   const [rollNo, setRollNo] = useState("");
   const [studentData, setStudentData] = useState<any>(null);
   const [matchStudentData, setMatchStudentData] = useState<any>(null); // Corrected variable name
-
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const fetchStudent = async () => {
+    try {
+      setLoading(true);
+      const adminCookie = getCookie("Admin");
+      if (!adminCookie) {
+        console.log("Admin cookie not found ");
+        return;
+      }
+
+      const { accessToken } = JSON.parse(adminCookie);
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+        credentials: "include",
+      };
+
+      const response = await fetch(
+        "https://sip-backend-api.onrender.com/api/v1/student?year=",
+        {
+          method: "GET",
+          headers: headers,
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log(data);
+      setLoading(false);
+      return data;
+    } catch (error) {
+      console.error("There was a problem with your fetch operation:", error);
+      return null;
+      setLoading(false);
+    }
+  };
   // Fetch student data when the component mounts
   useEffect(() => {
     async function fetchData() {
@@ -155,7 +158,7 @@ const Page = () => {
   const filteredData = studentData
     ? studentData.filter((item: any) => {
         return Object.values(item).some((value: any) =>
-          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+          value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
         );
       })
     : [];
@@ -275,13 +278,22 @@ const Page = () => {
             </CardHeader>
           </div>
           <div className="p-2 ">
-            <input
-              type="text"
-              placeholder="Search by name..."
-              className="border border-gray-400 rounded px-4 py-2 mb-4"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            {loading ? (
+              <input
+                placeholder="Fetching Student "
+                className="border border-gray-400 rounded px-4 py-2 mb-4"
+                disabled
+              />
+            ) : (
+              <input
+                type="text"
+                placeholder="Search by name..."
+                className="border border-gray-400 rounded px-4 py-2 mb-4"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            )}
+
             {searchTerm && filteredData.length === 0 && (
               <p className="text-red-500">No matching data found</p>
             )}

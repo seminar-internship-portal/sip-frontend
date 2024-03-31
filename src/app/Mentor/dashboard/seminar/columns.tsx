@@ -25,6 +25,7 @@ export type Student = {
   rollNo: string;
   prnNo: string;
   registrationId: string;
+  seminarTopic: string;
 };
 
 export const columns: ColumnDef<Student>[] = [
@@ -68,11 +69,12 @@ export const columns: ColumnDef<Student>[] = [
     header: "Full Name",
   },
   {
-    accessorKey: "seminar_topic ",
+    accessorKey: "seminarTopic",
     header: "Seminar Topic",
+    // Correct accessor key for seminar topic
   },
   // {
-  //   accessorKey: "id",
+  //   accessorKey: "username",
   //   header: "Id",
   // },
 

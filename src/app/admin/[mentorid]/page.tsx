@@ -21,6 +21,15 @@ import { error } from "console";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { MdDelete } from "react-icons/md";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 const page = ({ params }: { params: { mentorid: string } }) => {
   const [studentData, setStudentData] = useState<any>(null);
   const [matchStudentData, setMatchStudentData] = useState<any>(null);
@@ -28,7 +37,7 @@ const page = ({ params }: { params: { mentorid: string } }) => {
   const [assignedStudents, setAssignedStudents] = useState<any>([]);
   const [id, setId] = useState("");
   const [open, isOpen] = useState(false);
-
+  const [ayear, setAyear] = useState("");
   const fetchData = async () => {
     try {
       const adminCookies = getCookie("Admin");
@@ -68,13 +77,14 @@ const page = ({ params }: { params: { mentorid: string } }) => {
 
       const mentorId = params.mentorid;
       const baseUrl = process.env.API_BASE_URL;
-      const assignedStud = `${baseUrl}/mentor/studentAssigned/${mentorId}?academicYear=2023-2024`;
+      const assignedStud = `${baseUrl}/mentor/studentAssigned/${mentorId}?academicYear=${ayear}`;
       const assignedStudRes = await axios.get(assignedStud, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
       });
+      console.log(assignedStudRes.data.data);
       setAssignedStudents(assignedStudRes.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -83,6 +93,9 @@ const page = ({ params }: { params: { mentorid: string } }) => {
   useEffect(() => {
     fetchassstud();
   }, []);
+  useEffect(() => {
+    fetchassstud();
+  }, [ayear]);
 
   useEffect(() => {
     fetchData();
@@ -124,12 +137,15 @@ const page = ({ params }: { params: { mentorid: string } }) => {
   };
 
   const filteredData = studentData
-    ? studentData.filter((item: any) => {
-        return Object.values(item).some((value: any) =>
-          value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      })
+    ? studentData
+        .filter((item: any) => {
+          return Object.values(item).some((value: any) =>
+            value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        })
+        .slice(0, 10) // Limit to the top 20 results
     : [];
+
   useEffect(() => {
     async function fetchDatastud() {
       const studentData = await fetchStudent();
@@ -305,7 +321,100 @@ const page = ({ params }: { params: { mentorid: string } }) => {
           </div>
         </div>
       </Card>
-      <div className="overflow-x-auto mt-7 p-10">
+      <div className="flex m-3 gap-2">
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">{ayear || "YEAR"}</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>ACEDEMIC YEAR</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup
+                value={ayear}
+                onValueChange={(value) => {
+                  setAyear(value);
+                }}
+              >
+                <DropdownMenuRadioItem value="">All</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="2022-2023">
+                  2022-2023
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="2023-2024">
+                  2023-2024
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="">
+          <Dialog open={open} onOpenChange={isOpen}>
+            <DialogTrigger>
+              <Button>Assign Student</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Assign Student </DialogTitle>
+                {/* <DialogDescription>
+          This action cannot be undone. This will permanently delete your
+          account and remove your data from our servers.
+        </DialogDescription> */}
+              </DialogHeader>
+              <div className="p-2 ">
+                <input
+                  type="text"
+                  placeholder="Search by name..."
+                  className="border border-gray-400 rounded px-4 py-2 mb-4"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {searchTerm && filteredData.length === 0 && (
+                  <p className="text-red-500">No matching data found</p>
+                )}
+                {searchTerm && filteredData.length > 0 && (
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-max border-collapse border border-gray-400 rounded">
+                      <thead>
+                        <tr>
+                          <th className="border border-gray-400 px-2 py-2"></th>
+                          <th className="border border-gray-400 px-4 py-2">
+                            Name
+                          </th>
+                          <th className="border border-gray-400 px-4 py-2">
+                            Roll No
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredData.map((item: any) => (
+                          <tr key={item.id}>
+                            <td className="border border-gray-400 px-4 py-2">
+                              <input
+                                type="checkbox"
+                                onChange={(e) =>
+                                  handleCheckboxChange(e, item.id)
+                                }
+                              />
+                            </td>
+                            <td className="border border-gray-400 px-4 py-2">
+                              {item.fullName}
+                            </td>
+                            <td className="border border-gray-400 px-4 py-2">
+                              {item.rollNo}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+              <Button onClick={handleAssignment}>Assign</Button>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+      <div className="overflow-x-auto mt-1 p-5">
         <table className="w-full min-w-max border-collapse border border-gray-400 rounded">
           <thead>
             <tr>
@@ -351,70 +460,7 @@ const page = ({ params }: { params: { mentorid: string } }) => {
           )}
         </table>
       </div>
-      <div className="p-5 m-5">
-        <Dialog open={open} onOpenChange={isOpen}>
-          <DialogTrigger>
-            <Button>Assign Student</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Assign Student </DialogTitle>
-              {/* <DialogDescription>
-          This action cannot be undone. This will permanently delete your
-          account and remove your data from our servers.
-        </DialogDescription> */}
-            </DialogHeader>
-            <div className="p-2 ">
-              <input
-                type="text"
-                placeholder="Search by name..."
-                className="border border-gray-400 rounded px-4 py-2 mb-4"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              {searchTerm && filteredData.length === 0 && (
-                <p className="text-red-500">No matching data found</p>
-              )}
-              {searchTerm && filteredData.length > 0 && (
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-max border-collapse border border-gray-400 rounded">
-                    <thead>
-                      <tr>
-                        <th className="border border-gray-400 px-2 py-2"></th>
-                        <th className="border border-gray-400 px-4 py-2">
-                          Name
-                        </th>
-                        <th className="border border-gray-400 px-4 py-2">
-                          Roll No
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredData.map((item: any) => (
-                        <tr key={item.id}>
-                          <td className="border border-gray-400 px-4 py-2">
-                            <input
-                              type="checkbox"
-                              onChange={(e) => handleCheckboxChange(e, item.id)}
-                            />
-                          </td>
-                          <td className="border border-gray-400 px-4 py-2">
-                            {item.fullName}
-                          </td>
-                          <td className="border border-gray-400 px-4 py-2">
-                            {item.rollNo}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-            <Button onClick={handleAssignment}>Assign</Button>
-          </DialogContent>
-        </Dialog>
-      </div>
+      <div className="p-5 m-5"></div>
       <Button onClick={() => router.back()}>Goback</Button>
     </div>
   );
