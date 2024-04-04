@@ -41,11 +41,18 @@ export default function StudentTable() {
     <div className="container mx-auto py-3 flex flex-col gap-10">
       <div>
         <h1 className="font-bold m-2">Top Internship securers</h1>
-        <ScrollArea className="h-48 rounded-md border">
+        <ScrollArea className="h-80 rounded-md border">
           <div className="p-4">
+            <div className="text-ls font-bold m-2 p-4 sticky top-0 bg-white z-10">
+              <div className="flex justify-between">
+                <div className="w-1/3">Full Name</div>
+                <div className="w-1/3">Company Name</div>
+                <div>Stipend</div>
+              </div>
+            </div>
             {students.map((stud: any) => (
               <>
-                <div key={stud._id} className="text-sm">
+                <div key={stud._id} className="text-sm m-3">
                   <div className="flex justify-between">
                     <div className="w-1/3">{stud.fullName}</div>
                     <div className="w-1/3">{stud.companyName}</div>

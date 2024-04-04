@@ -10,7 +10,8 @@ export async function downloadToExcel(year:string) {
       {
         sheet: "Students",
         columns: [
-          { label: "Student Id", value: "id" },
+          { label: "Roll No", value: "rollNo" },
+          {label : "fullName", value : "fullName"},
           { label: "Username", value: "username" },
           { label: "Email", value: "email" },
           { label: "Mobile No", value: "mobileNo" },

@@ -95,11 +95,15 @@ const internship = () => {
           setInternshipData(response.data.data);
           setisOpen(false);
           fetchInternshipData();
+          toast.success("InterShip Added Succesfully");
         })
         .catch((error) => {
           console.error("Error fetching Internship Data:", error);
+          toast.error("Error");
         });
-    } catch (error) {}
+    } catch (error) {
+      toast.error("Error");
+    }
   };
 
   const fetchInternshipData = () => {
