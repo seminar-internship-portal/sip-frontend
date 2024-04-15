@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import ImageUpload from "@/components/custom/image-upload";
 import { getCookie } from "cookies-next";
 import { selectStudent } from "@/app/features/studentname/slice";
-
+import { format } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Link, MoveRight } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -35,7 +36,7 @@ const internship = () => {
   const [companyName, setCompanyName] = useState("");
   const [duration, setDuration] = useState("");
   const [status, setStatus] = useState("");
-  const [internshipdata, setInternshipData] = useState([]);
+  const [internshipdata, setInternshipData] = useState<any>([]);
   const student = useSelector(selectStudent);
   const [loading, setLoading] = useState(false);
   // completetion Letter
@@ -48,7 +49,7 @@ const internship = () => {
   //Offer Letter
   const [selectedFileOL, setSelectedFileOL] = useState<Array<File | null>>([]);
   const [loadingOL, setloadingOL] = useState(false);
-
+  const [offerscore, setofferscore] = useState(0);
   const [open, setisOpen] = useState(false);
 
   const handleNameChange = (event: any) => {
@@ -374,6 +375,49 @@ const internship = () => {
             </form>
           </DialogContent>
         </Dialog>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">Deadline info</Button>
+          </DialogTrigger>
+          <DialogContent className=" max-w-2xlnpm ">
+            <DialogHeader>
+              <DialogTitle>Share link</DialogTitle>
+              <DialogDescription>
+                Anyone who has this link will be able to view this.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col items-center justify-center  rounded-md ml-14 mr-14 p-5 border-gray-300 border-4">
+              <div className="mb-4">
+                <div className="border border-gray-300 bg-red-500 rounded-md p-1 w-52 text-center text-white font-bold">
+                  IMPORTANT
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Please read the following carefully:
+                </p>
+              </div>
+              <div className="flex justify-start m-5 p-5">
+                <ul className="list-disc font-semibold text-lg text-gray-700">
+                  <li>
+                    These are the deadlines for students to submit their
+                    internship and seminar PDFs.
+                  </li>
+                  <li>Students must submit the PDFs before the deadline.</li>
+                  <li>
+                    If failed to do so, students must meet with their respective
+                    mentor.
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <DialogFooter className="sm:justify-start">
+              <DialogClose asChild>
+                <Button type="button" variant="secondary">
+                  Close
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
       {internshipdata && internshipdata.length > 0 && (
         <div className=" mt-8">
@@ -429,6 +473,14 @@ const internship = () => {
                         </div>
                       </div>
                     </div>
+                    <div className=" flex p-2 mt-3 w-52 text-white bg-red-500 rounded-md hover:bg-red-700 focus:outline-none cursor-pointer">
+                      <p>DeadLine : </p>
+                      <p>
+                        {internship && internship.deadline
+                          ? format(internship.deadline, "dd-MM-yyyy")
+                          : "No deadline available"}
+                      </p>
+                    </div>
                     <div className="className=flex flex-col justify-center items-center mt-8">
                       <div className="w-full h-64 bg-slate-200 rounded-md flex flex-col justify-center items-center p-5">
                         <div className="w-full flex items-center justify-evenly  rounded-sm bg-white mt-2">
@@ -450,7 +502,19 @@ const internship = () => {
                               {internship.offerLetter ? (
                                 <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
                                   <p className="p-2 m-2">Offer Letter :</p>
+
                                   <div className="flex">
+                                    <div className=" flex px-3 py-2 m-3 text-white  bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
+                                      <p>Offer letter Score : </p>
+
+                                      <p>
+                                        {
+                                          internship?.fileMatchResults
+                                            ?.offerLetter?.matchScore
+                                        }
+                                      </p>
+                                    </div>
+
                                     <button
                                       onClick={() =>
                                         window.open(
@@ -475,38 +539,48 @@ const internship = () => {
                                   <p className="p-2 m-2">
                                     Upload the offer letter to see it here.
                                   </p>
-                                  <Dialog>
-                                    <DialogTrigger className="flex items-center px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
-                                      Add Offer Letter
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                      <DialogHeader>
-                                        <DialogTitle>
-                                          Add Offer Letter
-                                        </DialogTitle>
-                                      </DialogHeader>
-                                      <form
-                                        onSubmit={(event) =>
-                                          handleCompeletionOL(
-                                            event,
-                                            index,
-                                            internship._id
-                                          )
-                                        }
-                                      >
-                                        <input
-                                          type="file"
-                                          onChange={(event) =>
-                                            handleFileChangeOL(event, index)
+
+                                  {new Date() <=
+                                  new Date(internship.deadline) ? (
+                                    <Dialog>
+                                      <DialogTrigger className="flex items-center px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
+                                        Add Offer Letter
+                                      </DialogTrigger>
+                                      <DialogContent>
+                                        <DialogHeader>
+                                          <DialogTitle>
+                                            Add Offer Letter
+                                          </DialogTitle>
+                                        </DialogHeader>
+                                        <form
+                                          onSubmit={(event) =>
+                                            handleCompeletionOL(
+                                              event,
+                                              index,
+                                              internship._id
+                                            )
                                           }
-                                          accept=".pdf"
-                                        />
-                                        <DialogFooter className="p-5">
-                                          <Button type="submit">Upload</Button>
-                                        </DialogFooter>
-                                      </form>
-                                    </DialogContent>
-                                  </Dialog>
+                                        >
+                                          <input
+                                            type="file"
+                                            onChange={(event) =>
+                                              handleFileChangeOL(event, index)
+                                            }
+                                            accept=".pdf"
+                                          />
+                                          <DialogFooter className="p-5">
+                                            <Button type="submit">
+                                              Upload
+                                            </Button>
+                                          </DialogFooter>
+                                        </form>
+                                      </DialogContent>
+                                    </Dialog>
+                                  ) : (
+                                    <div className="px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
+                                      Contact the mentor
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </>
@@ -558,38 +632,48 @@ const internship = () => {
                                     Upload the PDF file for the Permission
                                     Letter :
                                   </p>
-                                  <Dialog>
-                                    <DialogTrigger className="flex items-center px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
-                                      Add Permission Letter
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                      <DialogHeader>
-                                        <DialogTitle>
-                                          Add Permission Letter
-                                        </DialogTitle>
-                                      </DialogHeader>
-                                      <form
-                                        onSubmit={(event) =>
-                                          handleCompeletionPL(
-                                            event,
-                                            index,
-                                            internship._id
-                                          )
-                                        }
-                                      >
-                                        <input
-                                          type="file"
-                                          onChange={(event) =>
-                                            handleFileChangePL(event, index)
+
+                                  {new Date() <=
+                                  new Date(internship.deadline) ? (
+                                    <Dialog>
+                                      <DialogTrigger className="flex items-center px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
+                                        Add Permission Letter
+                                      </DialogTrigger>
+                                      <DialogContent>
+                                        <DialogHeader>
+                                          <DialogTitle>
+                                            Add Permission Letter
+                                          </DialogTitle>
+                                        </DialogHeader>
+                                        <form
+                                          onSubmit={(event) =>
+                                            handleCompeletionPL(
+                                              event,
+                                              index,
+                                              internship._id
+                                            )
                                           }
-                                          accept=".pdf"
-                                        />
-                                        <DialogFooter className="p-5">
-                                          <Button type="submit">Upload</Button>
-                                        </DialogFooter>
-                                      </form>
-                                    </DialogContent>
-                                  </Dialog>
+                                        >
+                                          <input
+                                            type="file"
+                                            onChange={(event) =>
+                                              handleFileChangePL(event, index)
+                                            }
+                                            accept=".pdf"
+                                          />
+                                          <DialogFooter className="p-5">
+                                            <Button type="submit">
+                                              Upload
+                                            </Button>
+                                          </DialogFooter>
+                                        </form>
+                                      </DialogContent>
+                                    </Dialog>
+                                  ) : (
+                                    <div className="px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
+                                      Contact the mentor
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </div>
@@ -641,38 +725,48 @@ const internship = () => {
                                     Upload the PDF file for the Completion
                                     Letter :
                                   </p>
-                                  <Dialog>
-                                    <DialogTrigger className="flex items-center px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
-                                      Add Completion Letter
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                      <DialogHeader>
-                                        <DialogTitle>
-                                          Add Completion Letter
-                                        </DialogTitle>
-                                      </DialogHeader>
-                                      <form
-                                        onSubmit={(event) =>
-                                          handleCompeletionCL(
-                                            event,
-                                            index,
-                                            internship._id
-                                          )
-                                        }
-                                      >
-                                        <input
-                                          type="file"
-                                          onChange={(event) =>
-                                            handleFileChangeCL(event, index)
+
+                                  {new Date() <=
+                                  new Date(internship.deadline) ? (
+                                    <Dialog>
+                                      <DialogTrigger className="flex items-center px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
+                                        Add Completion Letter
+                                      </DialogTrigger>
+                                      <DialogContent>
+                                        <DialogHeader>
+                                          <DialogTitle>
+                                            Add Completion Letter
+                                          </DialogTitle>
+                                        </DialogHeader>
+                                        <form
+                                          onSubmit={(event) =>
+                                            handleCompeletionCL(
+                                              event,
+                                              index,
+                                              internship._id
+                                            )
                                           }
-                                          accept=".pdf"
-                                        />
-                                        <DialogFooter className="p-5">
-                                          <Button type="submit">Upload</Button>
-                                        </DialogFooter>
-                                      </form>
-                                    </DialogContent>
-                                  </Dialog>
+                                        >
+                                          <input
+                                            type="file"
+                                            onChange={(event) =>
+                                              handleFileChangeCL(event, index)
+                                            }
+                                            accept=".pdf"
+                                          />
+                                          <DialogFooter className="p-5">
+                                            <Button type="submit">
+                                              Upload
+                                            </Button>
+                                          </DialogFooter>
+                                        </form>
+                                      </DialogContent>
+                                    </Dialog>
+                                  ) : (
+                                    <div className="px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
+                                      Contact the mentor
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </>

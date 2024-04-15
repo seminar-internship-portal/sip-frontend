@@ -188,30 +188,43 @@ const Page = () => {
   const router = useRouter();
   return (
     <div className="container mx-auto p-4 ">
-      <div className="flex justify-between items-center mb-8 m-5">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">{ayear || "YEAR"}</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>ACADEMIC YEAR</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup
-              value={ayear}
-              onValueChange={(value) => {
-                setAyear(value);
-              }}
-            >
-              {/* <DropdownMenuRadioItem value="">All</DropdownMenuRadioItem> */}
-              <DropdownMenuRadioItem value="2022-2023">
-                2022-2023
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="2023-2024">
-                2023-2024
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="flex ">
+        <div className="flex justify-between items-center mb-8 m-5">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">{ayear || "YEAR"}</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>ACADEMIC YEAR</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup
+                value={ayear}
+                onValueChange={(value) => {
+                  setAyear(value);
+                }}
+              >
+                {/* <DropdownMenuRadioItem value="">All</DropdownMenuRadioItem> */}
+                <DropdownMenuRadioItem value="2022-2023">
+                  2022-2023
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="2023-2024">
+                  2023-2024
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div>
+          <div className="flex items-center  border-2 justify-center h-10 rounded-md gap-3 mb-8 m-5 p-2">
+            <div className="flex items-center ">
+              <div className="bg-red-500 rounded-md p-0.5 mr-2">
+                <span className="text-white ">IMP</span>
+              </div>
+              <h3 className="text-md ">Total Marks that can be allocated :</h3>
+            </div>
+            <p className="text-md font-bold">100</p>
+          </div>
+        </div>
       </div>
       <div className="grid gap-4 m-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         {data.map((item: any) => (

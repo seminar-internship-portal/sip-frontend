@@ -15,25 +15,24 @@ export default function Piechart({ ay }) {
   const [chartData, setChartData] = useState({});
   const [chartLabels, setChartLabels] = useState([]);
 
-  const baseUrl = process.env.API_BASE_URL;
-  const url = `${baseUrl}/student/internship?academicYear=${ay}`;
-  const cookie: any =
-    getCookie("Student") || getCookie("Admin") || getCookie("Mentor");
-
-  if (!cookie) {
-    console.log("No cookie found!");
-    return;
-  }
-
-  const { accessToken } = JSON.parse(cookie);
-
-  const config = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  };
-
   const fetchData = async () => {
+    const baseUrl = process.env.API_BASE_URL;
+    const url = `${baseUrl}/student/internship?academicYear=${ay}`;
+    const cookie: any =
+      getCookie("Student") || getCookie("Admin") || getCookie("Mentor");
+
+    if (!cookie) {
+      console.log("No cookie found!");
+      return;
+    }
+
+    const { accessToken } = JSON.parse(cookie);
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
     const res = await axios.get(url, config);
     const dataArr = res.data.data;
     let st: any = new Set();

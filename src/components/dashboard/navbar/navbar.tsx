@@ -19,7 +19,6 @@ const Navbar = () => {
   const router = useRouter();
   const handleLogout = () => {
     // Clear user data from localStorage
-    router.push("/login");
     deleteCookie("Student");
     deleteCookie("Mentor");
     deleteCookie("Admin");
@@ -30,6 +29,7 @@ const Navbar = () => {
     dispatch(clearAdmin());
 
     // Redirect to the login page
+    router.push("/login");
   };
 
   return (

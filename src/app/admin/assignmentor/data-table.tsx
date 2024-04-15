@@ -31,7 +31,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -67,7 +70,7 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   });
-
+  const router = useRouter();
   return (
     <div className="overflow-hidden">
       <div className="flex justify-between py-10 px-1">
@@ -109,6 +112,12 @@ export function DataTable<TData, TValue>({
             </DropdownMenuContent>
           </DropdownMenu>
           <Button onClick={() => downloadToExcel(ayear)}>Export</Button>
+          <Button
+            className=" w-[45vh]"
+            onClick={() => router.push("/admin/studnotassign")}
+          >
+            Student Not Assigned
+          </Button>
         </div>
 
         <div>

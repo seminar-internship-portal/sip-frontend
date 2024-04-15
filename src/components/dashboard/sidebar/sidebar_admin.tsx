@@ -64,6 +64,11 @@ const sidebar = () => {
           path: `/${role?.toLowerCase()}/evaluation`,
           icon: <MdAnalytics />,
         },
+        {
+          title: "Pdfs",
+          path: `/${role?.toLowerCase()}/pdfs`,
+          icon: <MdAnalytics />,
+        },
       ],
     },
     // {

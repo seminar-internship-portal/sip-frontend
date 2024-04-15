@@ -17,7 +17,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { error } from "console";
+import { error, log } from "console";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { MdDelete } from "react-icons/md";
@@ -30,6 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { MagnifyingGlass } from "react-loader-spinner";
 const page = ({ params }: { params: { mentorid: string } }) => {
   const [studentData, setStudentData] = useState<any>(null);
   const [matchStudentData, setMatchStudentData] = useState<any>(null);
@@ -38,6 +39,9 @@ const page = ({ params }: { params: { mentorid: string } }) => {
   const [id, setId] = useState("");
   const [open, isOpen] = useState(false);
   const [ayear, setAyear] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [loadings, setLoadings] = useState(false);
+
   const fetchData = async () => {
     try {
       const adminCookies = getCookie("Admin");
@@ -66,6 +70,7 @@ const page = ({ params }: { params: { mentorid: string } }) => {
   };
   const fetchassstud = async () => {
     try {
+      setLoading(true);
       const adminCookies = getCookie("Admin");
       if (!adminCookies) {
         console.error("Admin cookie not found");
@@ -86,16 +91,15 @@ const page = ({ params }: { params: { mentorid: string } }) => {
       });
       console.log(assignedStudRes.data.data);
       setAssignedStudents(assignedStudRes.data.data);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.error("Error fetching data:", error);
     }
   };
   useEffect(() => {
     fetchassstud();
   }, []);
-  useEffect(() => {
-    fetchassstud();
-  }, [ayear]);
 
   useEffect(() => {
     fetchData();
@@ -104,6 +108,8 @@ const page = ({ params }: { params: { mentorid: string } }) => {
 
   const fetchStudent = async () => {
     try {
+      setLoadings(true);
+
       const adminCookies = getCookie("Admin");
       if (!adminCookies) {
         console.error("Admin cookie not found");
@@ -118,7 +124,8 @@ const page = ({ params }: { params: { mentorid: string } }) => {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await fetch(
-        "https://sip-backend-api.onrender.com/api/v1/student",
+        `https://sip-backend-api.onrender.com/api/v1/student?year=${ayear}`,
+
         {
           headers: headers,
           method: "GET",
@@ -129,25 +136,61 @@ const page = ({ params }: { params: { mentorid: string } }) => {
       }
       const data = await response.json();
       console.log(data);
+      // const filteredData = data.filter((student: any) => {
+      //   return (
+      //     !student.hasOwnProperty("mentorAssigned") || !student.mentorAssigned
+      //   );
+      // });
+      // console.log(filteredData);
+
+      setLoadings(false);
       return data;
+      // setStudentData(studentData.data);
     } catch (error) {
       console.error("There was a problem with your fetch operation:", error);
+      setLoadings(false);
+
       return null;
     }
   };
+  useEffect(() => {
+    fetchassstud();
+    fetchStudent();
+  }, [ayear]);
+
+  // const filteredData = studentData
+  //   ? studentData
+  //       .filter((item: any) => {
+  //         return Object.values(item).some((value: any) =>
+  //           value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+  //         );
+  //       })
+  //       .slice(0, 10) // Limit to the top 20 results
+  //   : [];
 
   const filteredData = studentData
     ? studentData
         .filter((item: any) => {
-          return Object.values(item).some((value: any) =>
+          // Check if mentorAssigned is not present, null, or undefined
+          const mentorAssignedCondition =
+            !item.hasOwnProperty("mentorAssigned") ||
+            item.mentorAssigned === null ||
+            item.mentorAssigned === undefined;
+
+          // Check if any value in the item contains the searchTerm
+          const searchTermCondition = Object.values(item).some((value: any) =>
             value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
           );
+
+          // Combine both conditions using logical AND (&&)
+          return mentorAssignedCondition && searchTermCondition;
         })
-        .slice(0, 10) // Limit to the top 20 results
+        .slice(0, 10) // Limit to the top 10 results
     : [];
 
   useEffect(() => {
     async function fetchDatastud() {
+      setStudentData([]);
       const studentData = await fetchStudent();
       if (studentData) {
         setStudentData(studentData.data);
@@ -155,7 +198,9 @@ const page = ({ params }: { params: { mentorid: string } }) => {
     }
 
     fetchDatastud();
-  }, []);
+    // fetchStudent();
+    // console.log("filter data ", filteredData);
+  }, [ayear]);
 
   const handleCheckboxChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -276,6 +321,36 @@ const page = ({ params }: { params: { mentorid: string } }) => {
   const router = useRouter();
   return (
     <div>
+      {loading && (
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-50">
+          {/* <p className="text-lg font-semibold text-white">
+              Fetching data please wait
+            </p> */}
+          <MagnifyingGlass
+            visible={true}
+            height="80"
+            width="80"
+            ariaLabel="magnifying-glass-loading"
+            glassColor="#c0efff"
+            color="#000000"
+          />
+        </div>
+      )}
+      {loadings && (
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-50">
+          {/* <p className="text-lg font-semibold text-white">
+              Fetching data please wait
+            </p> */}
+          <MagnifyingGlass
+            visible={true}
+            height="80"
+            width="80"
+            ariaLabel="magnifying-glass-loading"
+            glassColor="#c0efff"
+            color="#000000"
+          />
+        </div>
+      )}
       <Card className="bg-white rounded-md shadow-md hover:shadow-2xl transition duration-300 ease-in-out">
         <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 items-center">
           <div className="flex justify-center mb-4 sm:mb-0">

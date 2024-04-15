@@ -30,23 +30,23 @@ export default function Barchart() {
 
   const baseUrl = process.env.API_BASE_URL;
   const url = `${baseUrl}/student/internship`;
-  const cookie: any =
-    getCookie("Student") || getCookie("Admin") || getCookie("Mentor");
-
-  if (!cookie) {
-    console.log("No cookie found!");
-    return;
-  }
-
-  const { accessToken } = JSON.parse(cookie);
-
-  const config = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  };
 
   const fetchData = async () => {
+    const cookie: any =
+      getCookie("Student") || getCookie("Admin") || getCookie("Mentor");
+
+    if (!cookie || cookie.length == 0) {
+      console.log("No cookie found!");
+      return;
+    }
+
+    const { accessToken } = JSON.parse(cookie);
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
     const res = await axios.get(url, config);
     const dataArr = res.data.data;
     let st: any = new Set();
