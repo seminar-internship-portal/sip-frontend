@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
+import { MdDelete } from "react-icons/md";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,7 @@ const internship = () => {
   const [loadingOL, setloadingOL] = useState(false);
   const [offerscore, setofferscore] = useState(0);
   const [open, setisOpen] = useState(false);
+  const [opend, setisOpend] = useState(false);
 
   const handleNameChange = (event: any) => {
     setCompanyName(event.target.value);
@@ -324,9 +325,57 @@ const internship = () => {
     }
   };
 
+  const handleDeleteinterhship = async (event: any, id: number) => {
+    console.log(id);
+    try {
+      const studentCookie = getCookie("Student");
+      if (!studentCookie) {
+        setloadingCL(false);
+        console.error("Student cookie not found");
+        return;
+      }
+
+      const { accessToken, student } = JSON.parse(studentCookie);
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      };
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const deleteres = await axios.delete(
+        `https://sip-backend-api.onrender.com/api/v1/student/deleteInternship/${id}`,
+        config
+      );
+
+      if (deleteres.status === 200) {
+        console.log("Internship deleted successfully");
+        toast.success("Internship deleted successfully");
+        setisOpend(false);
+        fetchInternshipData();
+        // Update the data after successful deletion if required
+      } else {
+        console.error("Error deleting internship:", deleteres.statusText);
+        toast.error("Error deleting internship");
+        setisOpend(false);
+      }
+    } catch (error) {
+      console.error("Error occurred while deleting internship:", error);
+      toast.error("Error occurred while deleting internship");
+      setisOpend(false);
+      // Handle any network or other errors that may occur during deletion
+    }
+  };
+
   return (
     <div>
-      <div className="p-5">
+      <div className="p-5 flex gap-5">
         <Dialog open={open} onOpenChange={setisOpen}>
           <DialogTrigger className="flex items-center px-3 py-2 text-white bg-black rounded-sm focus:outline-none cursor-pointer">
             ADD INTERNSHIP
@@ -376,15 +425,13 @@ const internship = () => {
           </DialogContent>
         </Dialog>
         <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline">Deadline info</Button>
+          <DialogTrigger className="flex items-center px-3 py-2 text-white bg-red-600 rounded-sm focus:outline-none cursor-pointer">
+            DEADLINE INFO
           </DialogTrigger>
-          <DialogContent className=" max-w-2xlnpm ">
+          <DialogContent className=" max-w-2xl ">
             <DialogHeader>
-              <DialogTitle>Share link</DialogTitle>
-              <DialogDescription>
-                Anyone who has this link will be able to view this.
-              </DialogDescription>
+              <DialogTitle>IMP</DialogTitle>
+              <DialogDescription></DialogDescription>
             </DialogHeader>
             <div className="flex flex-col items-center justify-center  rounded-md ml-14 mr-14 p-5 border-gray-300 border-4">
               <div className="mb-4">
@@ -425,11 +472,97 @@ const internship = () => {
             <Card key={index} className="w-[80vw] max-w-[150vh]">
               <CardHeader>
                 <CardTitle className="text-3xl text-center">
+                  <div className="relative">
+                    <div
+                      className="absolute top-0 right-0 p-2"
+                      aria-label="Delete"
+                    >
+                      <Dialog open={opend} onOpenChange={setisOpend}>
+                        <DialogTrigger>
+                          <div>
+                            <Button variant={"destructive"} size={"lg"}>
+                              DELETE
+                            </Button>
+                          </div>
+                          {/* <div className="bg-red-500 rounded-full p-3">
+                            <MdDelete
+                              className="w-6 h-6 cursor-pointer text-white"
+                              onClick={() =>
+                                handleDeleteinterhship(internship.id)
+                              }
+                            />
+                          </div> */}
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Are you absolutely sure?</DialogTitle>
+                            <DialogDescription>
+                              <div>
+                                This action cannot be undone. This will
+                                permanently delete your internship details and
+                                remove your data from our servers.
+                              </div>
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="flex flex-col justify-center space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Label
+                                htmlFor="companyName"
+                                className="text-base font-semibold w-40"
+                              >
+                                Company Name:
+                              </Label>
+                              <div className="flex items-center border rounded-md px-3 py-1">
+                                <span className="text-sm">
+                                  {internship?.companyName}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Label
+                                htmlFor="internshipType"
+                                className="text-base font-semibold w-40"
+                              >
+                                Status:
+                              </Label>
+                              <div className="flex items-center border rounded-md px-3 py-1">
+                                <span className="text-sm">
+                                  {internship?.status}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Label
+                                htmlFor="startDate"
+                                className="text-base font-semibold w-40"
+                              >
+                                Duration (in weeks):
+                              </Label>
+                              <div className="flex items-center border rounded-md px-3 py-1">
+                                <span className="text-sm">
+                                  {internship?.duration}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex justify-end">
+                            <Button
+                              onClick={(event) => {
+                                handleDeleteinterhship(event, internship._id);
+                              }}
+                              size={"lg"}
+                              variant={"destructive"}
+                            >
+                              CONFIRM
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </div>
                   INTERNSHIP DETAILS
                 </CardTitle>
-                <CardDescription className="text-lg text-center">
-                  Internship details
-                </CardDescription>
+                <CardDescription className="text-lg text-center"></CardDescription>
               </CardHeader>
               <CardContent>
                 <form>
@@ -440,7 +573,7 @@ const internship = () => {
                           htmlFor="companyName"
                           className="text-base font-semibold w-40"
                         >
-                          Company Name :
+                          Company Name:
                         </Label>
                         <div className="flex items-center border rounded-md px-3 py-1">
                           <span className="text-sm">
@@ -453,7 +586,7 @@ const internship = () => {
                           htmlFor="internshipType"
                           className="text-base font-semibold w-40"
                         >
-                          Status :
+                          Status:
                         </Label>
                         <div className="flex items-center border rounded-md px-3 py-1">
                           <span className="text-sm">{internship?.status}</span>
@@ -464,7 +597,7 @@ const internship = () => {
                           htmlFor="startDate"
                           className="text-base font-semibold w-40"
                         >
-                          Duration :
+                          Duration (in weeks):
                         </Label>
                         <div className="flex items-center border rounded-md px-3 py-1">
                           <span className="text-sm">
@@ -473,14 +606,18 @@ const internship = () => {
                         </div>
                       </div>
                     </div>
-                    <div className=" flex p-2 mt-3 w-52 text-white bg-red-500 rounded-md hover:bg-red-700 focus:outline-none cursor-pointer">
-                      <p>DeadLine : </p>
-                      <p>
-                        {internship && internship.deadline
-                          ? format(internship.deadline, "dd-MM-yyyy")
-                          : "No deadline available"}
-                      </p>
+
+                    <div className="flex justify-between items-center mt-3">
+                      <div className="flex p-2 text-white bg-red-500 rounded-md hover:bg-red-700 focus:outline-none cursor-pointer">
+                        <p>DeadLine:</p>
+                        <p>
+                          {internship && internship.deadline
+                            ? format(internship.deadline, "dd-MM-yyyy")
+                            : "No deadline available"}
+                        </p>
+                      </div>
                     </div>
+
                     <div className="className=flex flex-col justify-center items-center mt-8">
                       <div className="w-full h-64 bg-slate-200 rounded-md flex flex-col justify-center items-center p-5">
                         <div className="w-full flex items-center justify-evenly  rounded-sm bg-white mt-2">
@@ -502,18 +639,39 @@ const internship = () => {
                               {internship.offerLetter ? (
                                 <div className="w-full flex items-center justify-between rounded-sm bg-white mt-2">
                                   <p className="p-2 m-2">Offer Letter :</p>
-
                                   <div className="flex">
-                                    <div className=" flex px-3 py-2 m-3 text-white  bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer">
-                                      <p>Offer letter Score : </p>
+                                    {parseFloat(
+                                      (
+                                        internship?.fileMatchResults
+                                          ?.offerLetter?.matchScore * 100
+                                      ).toString()
+                                    ) > 60 ? (
+                                      <div className=" flex px-3 py-2 m-3 text-white  bg-green-500 rounded-md hover:bg-green-700 focus:outline-none cursor-pointer">
+                                        <p>Offer letter Score : </p>
 
-                                      <p>
-                                        {
-                                          internship?.fileMatchResults
-                                            ?.offerLetter?.matchScore
-                                        }
-                                      </p>
-                                    </div>
+                                        <p>
+                                          {(
+                                            internship?.fileMatchResults
+                                              ?.offerLetter?.matchScore * 100
+                                          )
+                                            .toString()
+                                            .slice(0, 5)}
+                                        </p>
+                                      </div>
+                                    ) : (
+                                      <div className=" flex px-3 py-2 m-3 text-white  bg-red-500 rounded-md hover:bg-red-700 focus:outline-none cursor-pointer">
+                                        <p>Offer letter Score : </p>
+                                        <p>
+                                          {(
+                                            internship?.fileMatchResults
+                                              ?.offerLetter?.matchScore * 100
+                                          )
+                                            .toString()
+                                            .slice(0, 5)}{" "}
+                                          %
+                                        </p>
+                                      </div>
+                                    )}
 
                                     <button
                                       onClick={() =>
@@ -524,7 +682,7 @@ const internship = () => {
                                       }
                                       className="px-3 py-2 m-3 text-white bg-blue-500 rounded-md hover:bg-blue-700 focus:outline-none cursor-pointer"
                                     >
-                                      Open PDF in New Tab
+                                      Open PDF
                                     </button>
                                     <button
                                       // Add functionality for deleting the offer letter if needed
