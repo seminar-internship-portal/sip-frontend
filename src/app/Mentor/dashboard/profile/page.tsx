@@ -240,7 +240,7 @@ const Profile: React.FC = () => {
           <div className="flex justify-center mb-4 sm:mb-0">
             <CardHeader className="w-48 h-48 rounded-full overflow-hidden">
               <Image
-                src={mentor?.avatar || "/noavatar.png"}
+                src={mentor?.avatar || "./noavatar.png"}
                 alt="No Avatar"
                 width={128}
                 height={128}

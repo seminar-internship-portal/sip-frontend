@@ -54,6 +54,11 @@ const sidebar = () => {
           path: `/${role}/dashboard/seminar`,
           icon: <MdAnalytics />,
         },
+        // {
+        //   title: "Evolution",
+        //   path: `/${role}/dashboard/evolution`,
+        //   icon: <MdAnalytics />,
+        // },
       ],
     },
     // {
@@ -75,7 +80,7 @@ const sidebar = () => {
           <div className="p-3">
             <Image
               className="object-cover rounded-full"
-              src={student.avatar}
+              src={student.avatar || "/noavatar.png"}
               alt="/public/noavatar.png"
               width={50}
               height={50}

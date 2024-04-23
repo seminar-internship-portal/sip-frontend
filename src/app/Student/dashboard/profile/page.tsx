@@ -231,10 +231,10 @@ const Profile: React.FC = () => {
           <div className="flex justify-center mb-4 sm:mb-0">
             <CardHeader className=" w-48 h-48 rounded-full overflow-hidden">
               <Image
-                src={student?.avatar}
+                src={student?.avatar || "/noavatar.png"}
                 alt="No Avatar"
-                width={500}
-                height={500}
+                width={128}
+                height={128}
                 layout="responsive"
               />
             </CardHeader>

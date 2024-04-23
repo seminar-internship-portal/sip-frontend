@@ -430,7 +430,6 @@ const internship = () => {
           </DialogTrigger>
           <DialogContent className=" max-w-2xl ">
             <DialogHeader>
-              <DialogTitle>IMP</DialogTitle>
               <DialogDescription></DialogDescription>
             </DialogHeader>
             <div className="flex flex-col items-center justify-center  rounded-md ml-14 mr-14 p-5 border-gray-300 border-4">
@@ -469,7 +468,7 @@ const internship = () => {
       {internshipdata && internshipdata.length > 0 && (
         <div className=" mt-8">
           {internshipdata.map((internship: any, index: any) => (
-            <Card key={index} className="w-[80vw] max-w-[150vh]">
+            <Card key={index} className="w-[80vw] max-w-[150vh] mt-5">
               <CardHeader>
                 <CardTitle className="text-3xl text-center">
                   <div className="relative">
@@ -646,9 +645,16 @@ const internship = () => {
                                           ?.offerLetter?.matchScore * 100
                                       ).toString()
                                     ) > 60 ? (
-                                      <div className=" flex px-3 py-2 m-3 text-white  bg-green-500 rounded-md hover:bg-green-700 focus:outline-none cursor-pointer">
-                                        <p>Offer letter Score : </p>
-
+                                      <div className="flex px-3 py-2 m-3 text-white bg-green-500 rounded-md hover:bg-green-700 focus:outline-none cursor-pointer">
+                                        <p>Closest Match: </p>
+                                        <p>
+                                          "
+                                          {
+                                            internship?.fileMatchResults
+                                              ?.offerLetter?.matchPhrase
+                                          }
+                                          " with
+                                        </p>
                                         <p>
                                           {(
                                             internship?.fileMatchResults
@@ -656,19 +662,26 @@ const internship = () => {
                                           )
                                             .toString()
                                             .slice(0, 5)}
+                                          % similarity
                                         </p>
                                       </div>
                                     ) : (
-                                      <div className=" flex px-3 py-2 m-3 text-white  bg-red-500 rounded-md hover:bg-red-700 focus:outline-none cursor-pointer">
-                                        <p>Offer letter Score : </p>
+                                      <div className="flex px-3 py-2 m-3 text-white bg-red-500 rounded-md hover:bg-red-700 focus:outline-none cursor-pointer">
+                                        <p>Closest Match: </p>
                                         <p>
+                                          "
+                                          {
+                                            internship?.fileMatchResults
+                                              ?.offerLetter?.matchPhrase
+                                          }
+                                          " with{" "}
                                           {(
                                             internship?.fileMatchResults
                                               ?.offerLetter?.matchScore * 100
                                           )
                                             .toString()
-                                            .slice(0, 5)}{" "}
-                                          %
+                                            .slice(0, 5)}
+                                          % similarity
                                         </p>
                                       </div>
                                     )}

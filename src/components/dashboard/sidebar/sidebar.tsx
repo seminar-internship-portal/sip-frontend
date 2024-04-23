@@ -44,6 +44,11 @@ const Sidebar = () => {
           path: `/${role}/dashboard/seminar`,
           icon: <MdAnalytics />,
         },
+        {
+          title: "Evaluation",
+          path: `/${role}/dashboard/evaluation`,
+          icon: <MdAnalytics />,
+        },
       ],
     },
   ];
